@@ -1,0 +1,12 @@
+version: '1.0.0'
+
+services:
+  backend:
+    image: dmitriynazarov/pomogator
+    ports:
+      - 5500:5500
+
+
+
+
+
