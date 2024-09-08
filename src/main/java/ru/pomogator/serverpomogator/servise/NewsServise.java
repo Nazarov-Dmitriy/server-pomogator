@@ -7,10 +7,10 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import ru.pomogator.serverpomogator.dto.news.NewsAddDto;
-import ru.pomogator.serverpomogator.dto.news.NewsItemDto;
+import ru.pomogator.serverpomogator.domain.dto.news.NewsAddDto;
+import ru.pomogator.serverpomogator.domain.dto.news.NewsItemDto;
 import ru.pomogator.serverpomogator.exception.BadRequest;
-import ru.pomogator.serverpomogator.model.news.NewsModel;
+import ru.pomogator.serverpomogator.domain.model.news.NewsModel;
 import ru.pomogator.serverpomogator.repository.UserRepository;
 import ru.pomogator.serverpomogator.repository.news.CategoryRepository;
 import ru.pomogator.serverpomogator.repository.news.NewsRepository;
@@ -152,6 +152,30 @@ public class NewsServise {
         } catch (Exception e) {
             throw new BadRequest("Error input data");
         }
+    }
+
+    public ResponseEntity<?> setShow(Long id) {
+        var news = newsRepository.findById(id).orElseThrow();
+        news.setShows(news.getShows() + 1);
+        newsRepository.save(news);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Transactional
+    public ResponseEntity<?> setLike(Long id, Integer like, Integer dislike) {
+        var news = newsRepository.findById(id).orElseThrow();
+        if (like != null) {
+            news.setLikes(news.getLikes() + like);
+        } else if (dislike != null) {
+            if (news.getLikes() - dislike > 0) {
+                news.setLikes(news.getLikes() - dislike);
+            }else {
+                news.setLikes(0);
+            }
+        }
+        newsRepository.save(news);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
 

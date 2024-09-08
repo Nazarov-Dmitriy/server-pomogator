@@ -2,7 +2,7 @@ package ru.pomogator.serverpomogator.utils;
 
 import org.springframework.web.multipart.MultipartFile;
 import ru.pomogator.serverpomogator.exception.InternalServerError;
-import ru.pomogator.serverpomogator.model.FileModel;
+import ru.pomogator.serverpomogator.domain.model.FileModel;
 
 import java.io.BufferedOutputStream;
 import java.io.File;

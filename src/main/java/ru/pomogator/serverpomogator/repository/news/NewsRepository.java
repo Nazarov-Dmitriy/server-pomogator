@@ -1,13 +1,10 @@
 package ru.pomogator.serverpomogator.repository.news;
 
-import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import ru.pomogator.serverpomogator.model.news.CategoryModel;
-import ru.pomogator.serverpomogator.model.news.NewsModel;
+import ru.pomogator.serverpomogator.domain.model.news.NewsModel;
 
-import java.util.Collection;
 import java.util.List;
 
 

@@ -1,4 +1,4 @@
-package ru.pomogator.serverpomogator.dto;
+package ru.pomogator.serverpomogator.domain.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

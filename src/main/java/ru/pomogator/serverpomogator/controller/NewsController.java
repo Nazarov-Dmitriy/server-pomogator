@@ -4,8 +4,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.pomogator.serverpomogator.dto.news.NewsAddDto;
-import ru.pomogator.serverpomogator.dto.news.NewsDto;
+import ru.pomogator.serverpomogator.domain.dto.news.NewsAddDto;
 import ru.pomogator.serverpomogator.servise.NewsServise;
 
 @RestController
@@ -40,5 +39,15 @@ public class NewsController {
     @GetMapping("/categoty")
     public ResponseEntity<?> getCategory() {
         return newsServise.getCategory();
+    }
+
+    @GetMapping("/show/{id}")
+    public ResponseEntity<?> setShow(@PathVariable  Long id) {
+        return newsServise.setShow(id);
+    }
+
+    @GetMapping("/like")
+    public ResponseEntity<?> setLike(@RequestParam Long id, @RequestParam(required = false) Integer like, @RequestParam(required = false) Integer dislike) {
+        return newsServise.setLike(id ,like, dislike);
     }
 }
