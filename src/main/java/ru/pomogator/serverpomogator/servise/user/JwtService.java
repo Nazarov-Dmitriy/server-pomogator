@@ -1,6 +1,7 @@
 package ru.pomogator.serverpomogator.servise.user;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -8,6 +9,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import ru.pomogator.serverpomogator.domain.model.User;
 import ru.pomogator.serverpomogator.security.JwtUser;
 
 import java.security.Key;
@@ -27,7 +29,7 @@ public class JwtService {
      * @param token токен
      * @return имя пользователя
      */
-    public String extractUsername(String token) {
+    public String extractUserName(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -41,25 +43,9 @@ public class JwtService {
         Map<String, Object> claims = new HashMap<>();
         if (userDetails instanceof JwtUser customUserDetails) {
             claims.put("id", customUserDetails.getUser().getId());
-            claims.put("email", customUserDetails.getUser().getEmail());
             claims.put("role", customUserDetails.getUser().getRole());
         }
         return generateToken(claims, userDetails);
-    }
-
-    /**
-     * Генерация токена
-     *
-     * @param extraClaims дополнительные данные
-     * @param userDetails данные пользователя
-     * @return токен
-     */
-    private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-
-        return Jwts.builder().claims(extraClaims).subject(userDetails.getUsername())
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 100000 * 60 * 24))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
     }
 
     /**
@@ -70,7 +56,7 @@ public class JwtService {
      * @return true, если токен валиден
      */
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String userName = extractUsername(token);
+        final String userName = extractUserName(token);
         return (userName.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
@@ -87,6 +73,22 @@ public class JwtService {
         return claimsResolvers.apply(claims);
     }
 
+    /**
+     * Генерация токена
+     *
+     * @param extraClaims дополнительные данные
+     * @param userDetails данные пользователя
+     * @return токен
+     */
+    private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        System.out.println("generateToken");
+        System.out.println(userDetails.getUsername());
+        var a = Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 100000 * 60 * 24))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
+        return a;
+    }
 
     /**
      * Проверка токена на просроченность
@@ -114,7 +116,7 @@ public class JwtService {
      * @param token токен
      * @return данные
      */
-    public Claims extractAllClaims(String token) {
+    public Claims extractAllClaims(String token) throws ExpiredJwtException {
         return Jwts.parser().setSigningKey(getSigningKey()).build().parseClaimsJws(token)
                 .getBody();
     }

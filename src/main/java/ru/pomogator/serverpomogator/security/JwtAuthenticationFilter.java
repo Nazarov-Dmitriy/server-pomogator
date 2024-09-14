@@ -51,7 +51,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // Обрезаем префикс и получаем имя пользователя из токена
         var jwt = authHeader.substring(BEARER_PREFIX.length());
-        var username = jwtService.extractUsername(jwt);
+        var username = jwtService.extractUserName(jwt);
+        var usernameAll = jwtService.extractAllClaims(jwt);
+        System.out.println("usernameAll");
+        System.out.println(usernameAll);
         if (StringUtils.isNotEmpty(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = customerUserDetailsService.loadUserByUsername(username);
             if (jwtService.isTokenValid(jwt, userDetails)) {

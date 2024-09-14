@@ -2,6 +2,7 @@ package ru.pomogator.serverpomogator.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,29 +17,27 @@ import ru.pomogator.serverpomogator.servise.user.UserService;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthenticationService authenticationService;
-    private final UserService userService;
 
     @PostMapping("/sign-up")
-    public JwtAuthenticationResponse signUp(@RequestBody @Valid SignUpRequest request) {
+    public AuthenticationResponse signUp(@RequestBody @Validated(AuthenticationRequest.SignUpOne.class) AuthenticationRequest request) {
         return authenticationService.signUp(request);
     }
 
     @PostMapping("/sign-in")
-    public JwtAuthenticationResponse signIn(@RequestBody @Valid SignInRequest request) {
+    public AuthenticationResponse signIn(@RequestBody @Validated(AuthenticationRequest.SignIn.class) AuthenticationRequest request) {
         return authenticationService.signIn(request);
     }
 
 
     @PostMapping("/user-info")
-    public User registerInfo(@RequestBody @Valid AuthenticationRequest request) {
+    public UserResponse registerInfo(@RequestBody  @Validated(AuthenticationRequest.SignUpTwo.class) AuthenticationRequest request) {
         System.out.println(request);
-        return userService.registerInfo(request);
+        return authenticationService.registerInfo(request);
     }
 
     @PostMapping("/auto-login")
-    public void registerInfo(@RequestBody  String token) {
-        System.out.println(token);
-//        return authenticationService.autoLogin(token);
+    public UserResponse autoLogin(@RequestBody  AuthenticationRequest token) {
+        return authenticationService.autoLogin(token);
     }
 }
 

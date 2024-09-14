@@ -6,16 +6,16 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.pomogator.serverpomogator.domain.dto.auth.JwtAuthenticationResponse;
-import ru.pomogator.serverpomogator.domain.dto.auth.SignInRequest;
-import ru.pomogator.serverpomogator.domain.dto.auth.SignUpRequest;
-import ru.pomogator.serverpomogator.domain.dto.auth.UserResponse;
+import ru.pomogator.serverpomogator.domain.dto.auth.*;
 import ru.pomogator.serverpomogator.domain.mapper.UserMapper;
 import ru.pomogator.serverpomogator.domain.model.Role;
 import ru.pomogator.serverpomogator.domain.model.User;
 import ru.pomogator.serverpomogator.exception.BadRequest;
+import ru.pomogator.serverpomogator.repository.UserRepository;
 import ru.pomogator.serverpomogator.security.CustomerUserDetailsService;
 import ru.pomogator.serverpomogator.security.JwtUser;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,15 +26,10 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final CustomerUserDetailsService customerUserDetailsService;
     private final UserMapper userMapper;
+    private final UserRepository userRepository;
 
 
-    /**
-     * Регистрация пользователя
-     *
-     * @param request данные пользователя
-     * @return токен
-     */
-    public JwtAuthenticationResponse signUp(SignUpRequest request) {
+    public AuthenticationResponse signUp(AuthenticationRequest request) {
 
         var user = User.builder()
                 .email(request.getEmail())
@@ -59,17 +54,11 @@ public class AuthenticationService {
 //                );
 
 //       var a = userMapperImpl.toUserResponse(user);
-        return new JwtAuthenticationResponse(jwt, userMapper.toUserResponse(user));
+        return new AuthenticationResponse(jwt, userMapper.toUserResponse(user));
 //        return new JwtAuthenticationResponse(jwt,   userResponse);
     }
 
-    /**
-     * Аутентификация пользователя
-     *
-     * @param request данные пользователя
-     * @return токен
-     */
-    public JwtAuthenticationResponse signIn(SignInRequest request) throws BadRequest {
+    public AuthenticationResponse signIn(AuthenticationRequest request) throws BadRequest {
         var user = customerUserDetailsService.loadUserByUsername(request.getEmail());
         if (!BCrypt.checkpw(request.getPassword(), user.getPassword())) {
             throw new BadRequest("Bad password");
@@ -92,15 +81,26 @@ public class AuthenticationService {
                 user.getUser().getPlace_work(),
                 user.getUser().getRank(),
                 user.getUser().getPhone());
-
-//        return new JwtAuthenticationResponse(jwt, userMapper.toUserResponse(user.getUser()));
-        return new JwtAuthenticationResponse(jwt,  userResponse);
+        return new AuthenticationResponse(jwt, userMapper.toUserResponse(user.getUser()));
+//        return new JwtAuthenticationResponse(jwt,  userResponse);
     }
 
-    public User autoLogin(String login) {
-        System.out.println(login);
+    public UserResponse registerInfo(AuthenticationRequest request) {
+        Optional<User> user = userService.findByEmail(request.getEmail());
+        if (user.isPresent()) {
+            userMapper.updateUserFromDto(request, user.get());
+            userRepository.save(user.get());
+        }
+//        mapper.updateCustomerFromDto(dto, myCustomer);
+//        repo.save(myCustomer);
+//        System.out.println(login);
 //        var уьфшд = jwtService.extractUsername(jwt);
+        return userMapper.toUserResponse(new User());
+    }
 
-        return new User();
+    public UserResponse autoLogin(AuthenticationRequest token) {
+        var email = jwtService.extractUserName(token.getToken());
+        var user = customerUserDetailsService.loadUserByUsername(email);
+        return userMapper.toUserResponse(user.getUser());
     }
 }
