@@ -8,7 +8,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import ru.pomogator.serverpomogator.domain.model.User;
+import ru.pomogator.serverpomogator.security.JwtUser;
 
 import java.security.Key;
 import java.util.Date;
@@ -27,7 +27,7 @@ public class JwtService {
      * @param token токен
      * @return имя пользователя
      */
-    public String extractUserName(String token) {
+    public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -39,12 +39,27 @@ public class JwtService {
      */
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        if (userDetails instanceof User customUserDetails) {
-            claims.put("id", customUserDetails.getId());
-            claims.put("email", customUserDetails.getEmail());
-            claims.put("role", customUserDetails.getRole());
+        if (userDetails instanceof JwtUser customUserDetails) {
+            claims.put("id", customUserDetails.getUser().getId());
+            claims.put("email", customUserDetails.getUser().getEmail());
+            claims.put("role", customUserDetails.getUser().getRole());
         }
         return generateToken(claims, userDetails);
+    }
+
+    /**
+     * Генерация токена
+     *
+     * @param extraClaims дополнительные данные
+     * @param userDetails данные пользователя
+     * @return токен
+     */
+    private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+
+        return Jwts.builder().claims(extraClaims).subject(userDetails.getUsername())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + 100000 * 60 * 24))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
     }
 
     /**
@@ -55,7 +70,7 @@ public class JwtService {
      * @return true, если токен валиден
      */
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String userName = extractUserName(token);
+        final String userName = extractUsername(token);
         return (userName.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
@@ -72,19 +87,6 @@ public class JwtService {
         return claimsResolvers.apply(claims);
     }
 
-    /**
-     * Генерация токена
-     *
-     * @param extraClaims дополнительные данные
-     * @param userDetails данные пользователя
-     * @return токен
-     */
-    private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 100000 * 60 * 24))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
-    }
 
     /**
      * Проверка токена на просроченность
@@ -112,7 +114,7 @@ public class JwtService {
      * @param token токен
      * @return данные
      */
-    private Claims extractAllClaims(String token) {
+    public Claims extractAllClaims(String token) {
         return Jwts.parser().setSigningKey(getSigningKey()).build().parseClaimsJws(token)
                 .getBody();
     }

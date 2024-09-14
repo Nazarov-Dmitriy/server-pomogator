@@ -16,18 +16,12 @@ import java.util.Optional;
 public class CustomerUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 
-    public UserDetailsService userDetailsService() {
-           return this;
-    }
-
     @Override
-    public JwtUser loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.findByUsername(username);
-        System.out.println(user);
+    public JwtUser loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional<User> user = userRepository.findByEmail(email);
         if (user.isEmpty()) {
-            throw new BadRequest("Bad credentials");
+            throw new BadRequest("Пользователь не найден");
         }
-
-        return new JwtUser(user.get().getId(), user.get().getUsername(), user.get().getPassword(), user.get().getEmail(), user.get().getRole());
+        return new JwtUser(user.get());
     }
 }

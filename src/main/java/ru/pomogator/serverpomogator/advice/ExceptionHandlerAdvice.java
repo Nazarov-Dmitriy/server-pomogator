@@ -12,6 +12,7 @@ import ru.pomogator.serverpomogator.exception.BadRequest;
 import ru.pomogator.serverpomogator.exception.InternalServerError;
 import ru.pomogator.serverpomogator.exception.Unauthorized;
 
+import javax.naming.AuthenticationException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -22,8 +23,7 @@ public class ExceptionHandlerAdvice {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handleValidationExceptions(
-            MethodArgumentNotValidException ex) {
+    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
@@ -35,30 +35,25 @@ public class ExceptionHandlerAdvice {
 
     @ExceptionHandler(BadRequest.class)
     public ResponseEntity<?> badRequest(BadRequest exception, HttpServletRequest req) {
-        String serverScheme = req.getScheme();
-        String serverHost = req.getServerName();
-        int serverPort = req.getServerPort();
-        String contextPath = req.getServletPath();
-        String targetBase = serverScheme + "://" + serverHost + ":" + serverPort + contextPath;
-
-        ErrorMessageLogin error;
         UUID id = UUID.randomUUID();
-        if (exception.getMessage().equals("login")) {
-            error = new ErrorMessageLogin(id, new String[]{"Неправильный email"}, new String[]{"Неправильный пароль"});
-        } else {
-            error = new ErrorMessageLogin(id, new String[]{}, new String[]{"Неправильный пароль"});
+        if(exception.getMessage().equals("Пользователь не найден")){
+            Map<String, String> errors = new HashMap<>();
+            errors.put("email", "Пользователь не найден");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+
+        if(exception.getMessage().equals("Bad password")){
+            Map<String, String> errors = new HashMap<>();
+            errors.put("password", "Не правильный пароль");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+        }
+
+        ErrorMessage errorMessage = new ErrorMessage(id, exception.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
     }
 
     @ExceptionHandler(Unauthorized.class)
     public ResponseEntity<ErrorMessage> unauthorized(Unauthorized exception, HttpServletRequest req) {
-        String serverScheme = req.getScheme();
-        String serverHost = req.getServerName();
-        int serverPort = req.getServerPort();
-        String contextPath = req.getServletPath();
-        String targetBase = serverScheme + "://" + serverHost + ":" + serverPort + contextPath;
-        StringBuilder logText = new StringBuilder();
         UUID id = UUID.randomUUID();
         ErrorMessage errorMessage = new ErrorMessage(id, exception.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorMessage);
@@ -66,12 +61,20 @@ public class ExceptionHandlerAdvice {
 
     @ExceptionHandler(InternalServerError.class)
     public ResponseEntity<ErrorMessage> internalServerError(InternalServerError exception, HttpServletRequest req) {
-        String serverScheme = req.getScheme();
-        String serverHost = req.getServerName();
-        int serverPort = req.getServerPort();
-        String contextPath = req.getServletPath();
-        StringBuilder logText = new StringBuilder();
-        String targetBase = serverScheme + "://" + serverHost + ":" + serverPort + contextPath;
+        UUID id = UUID.randomUUID();
+        ErrorMessage errorMessage = new ErrorMessage(id, exception.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorMessage> IllegalArgumentException (InternalServerError exception, HttpServletRequest req) {
+        UUID id = UUID.randomUUID();
+        ErrorMessage errorMessage = new ErrorMessage(id, exception.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorMessage> AuthenticationException (InternalServerError exception, HttpServletRequest req) {
         UUID id = UUID.randomUUID();
         ErrorMessage errorMessage = new ErrorMessage(id, exception.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);

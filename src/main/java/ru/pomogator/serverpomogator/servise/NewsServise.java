@@ -9,8 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.pomogator.serverpomogator.domain.dto.news.NewsAddDto;
 import ru.pomogator.serverpomogator.domain.dto.news.NewsItemDto;
-import ru.pomogator.serverpomogator.exception.BadRequest;
 import ru.pomogator.serverpomogator.domain.model.news.NewsModel;
+import ru.pomogator.serverpomogator.exception.BadRequest;
 import ru.pomogator.serverpomogator.repository.UserRepository;
 import ru.pomogator.serverpomogator.repository.news.CategoryRepository;
 import ru.pomogator.serverpomogator.repository.news.NewsRepository;
@@ -101,7 +101,6 @@ public class NewsServise {
                         regex.append(tag);
                     }
                 }
-                System.out.println(regex);
                 news = newsRepository.findTags(String.valueOf(regex));
             } else {
                 news = newsRepository.findAll();
@@ -170,7 +169,7 @@ public class NewsServise {
         } else if (dislike != null) {
             if (news.getLikes() - dislike > 0) {
                 news.setLikes(news.getLikes() - dislike);
-            }else {
+            } else {
                 news.setLikes(0);
             }
         }

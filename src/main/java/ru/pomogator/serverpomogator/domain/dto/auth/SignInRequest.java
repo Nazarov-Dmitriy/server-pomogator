@@ -13,7 +13,7 @@ public class SignInRequest {
     @Email(message = "Email адрес должен быть в формате user@example.com")
     private String email;
 
-    @Size(min = 6, max = 255, message = "Длина пароля должна быть от 8 до 255 символов")
+    @Size(min = 5, max = 255, message = "Длина пароля должна быть от 8")
     @NotBlank(message = "Пароль не может быть пустыми")
     private String password;
 }

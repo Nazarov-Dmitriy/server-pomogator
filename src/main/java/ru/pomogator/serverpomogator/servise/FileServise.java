@@ -20,10 +20,7 @@ public class FileServise {
         try {
 //            byte[] fileBytes = file.getBytes();
 //            long fileLength = file.getSize();
-//            String name = file.getName();
-//            System.out.println(name);
-//            System.out.println(file.getOriginalFilename());
-//
+//            String name = file.getName();//
 //            FileModel build = FileModel.builder().name(file.getOriginalFilename())
 //                    .content(fileBytes).size(fileLength).build();
 //            fileRepository.save(build);

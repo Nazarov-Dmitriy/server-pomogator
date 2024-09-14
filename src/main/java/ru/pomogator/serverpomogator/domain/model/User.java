@@ -7,6 +7,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -15,6 +16,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Table(name = "users")
 public class User {
     //public class User implements UserDetails {
@@ -24,11 +26,11 @@ public class User {
     @SequenceGenerator(name = "user_id_seq", sequenceName = "user_id_seq", allocationSize = 1)
     private Long id;
 
-    @Column(name = "password", nullable = false)
-    private String password;
-
     @Column(name = "email", unique = true, nullable = false)
     private String email;
+
+    @Column(name = "password", nullable = false)
+    private String password;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
@@ -42,4 +44,19 @@ public class User {
 
     @Column(name = "patronymic")
     private String patronymic;
+
+    @Column(name = "date_birth")
+    private Date date_birth;
+
+    @Column(name = "position")
+    private String position;
+
+    @Column(name = "place_work")
+    private String place_work;
+
+    @Column(name = "rank")
+    private String rank;
+
+    @Column(name = "phone")
+    private String phone;
 }
