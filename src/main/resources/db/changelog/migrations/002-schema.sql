@@ -33,20 +33,7 @@ values ('Химия'),
        ('Видео'),
        ('Статья');
 
---changeset dmitriy:5
-create table news
-(
-    id               bigint AUTO_INCREMENT primary key,
-    title            varchar(255) not null,
-    subtitle         varchar(255) not null,
-    article          TEXT         not null,
-    date_publication timestamp    DEFAULT CURRENT_TIMESTAMP,
-    category_id      bigint       not null,
-    shows            int          DEFAULT 0,
-    likes            int          DEFAULT 0,
-    tags             varchar(255) DEFAULT 0,
-    FOREIGN KEY (category_id) REFERENCES category (id)
-);
+
 
 
 

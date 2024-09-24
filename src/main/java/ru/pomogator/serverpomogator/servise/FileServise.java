@@ -18,12 +18,6 @@ public class FileServise {
     @Transactional
     public void addFile(MultipartFile file) {
         try {
-//            byte[] fileBytes = file.getBytes();
-//            long fileLength = file.getSize();
-//            String name = file.getName();//
-//            FileModel build = FileModel.builder().name(file.getOriginalFilename())
-//                    .content(fileBytes).size(fileLength).build();
-//            fileRepository.save(build);
 
         } catch (EmptyResultDataAccessException e) {
             throw new BadRequest("Error input data");

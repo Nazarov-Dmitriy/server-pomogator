@@ -7,5 +7,4 @@ import ru.pomogator.serverpomogator.domain.model.news.CategoryModel;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<CategoryModel, Long> {
-
 }

@@ -1,8 +1,8 @@
 package ru.pomogator.serverpomogator.utils;
 
 import org.springframework.web.multipart.MultipartFile;
-import ru.pomogator.serverpomogator.exception.InternalServerError;
 import ru.pomogator.serverpomogator.domain.model.FileModel;
+import ru.pomogator.serverpomogator.exception.InternalServerError;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -36,7 +36,7 @@ public class FileCreate {
             try {
                 byte[] bytes = file.getBytes();
                 BufferedOutputStream stream =
-                        new BufferedOutputStream(new FileOutputStream(new File( path + name)));
+                        new BufferedOutputStream(new FileOutputStream(new File(path + name)));
                 stream.write(bytes);
                 stream.close();
             } catch (Exception e) {

@@ -2,10 +2,10 @@ package ru.pomogator.serverpomogator.domain.model.news;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
+import ru.pomogator.serverpomogator.domain.model.BaseEntity;
 import ru.pomogator.serverpomogator.domain.model.FileModel;
 
-import java.util.Date;
+import java.util.List;
 
 @Data
 @Getter
@@ -15,43 +15,47 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@EqualsAndHashCode(callSuper = true)
 @Table(name = "NEWS")
-public class NewsModel {
+public class NewsModel extends BaseEntity {
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(nullable = false)
-    private String subtitle;
+    @Column(name = "annotation", nullable = false)
+    private String annotation;
 
     @Lob
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(name = "article", nullable = false, columnDefinition = "TEXT")
     private String article;
 
-    @Column(nullable = false)
-    private Long category_id;
-
-    @CreatedDate
-    @Column()
-    private Date date_publication;
-
-    @Column(nullable = false)
+    @Column(name = "shows", nullable = false)
     private int shows;
 
-    @Column(nullable = false)
+    @Column(name = "likes", nullable = false)
     private int likes;
 
-    @Column(nullable = false)
-    private String tags;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @Column(name = "tags")
+    private List<TagsModel> tags;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "category_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @Column(name = "video")
+    private String video;
+
+    @Column(name = "link_to_source")
+    private String link_to_source;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
     private CategoryModel category;
 
-    @OneToOne( fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
     private FileModel file;
+
 }
 

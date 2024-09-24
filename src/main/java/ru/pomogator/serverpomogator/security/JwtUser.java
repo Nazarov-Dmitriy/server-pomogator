@@ -7,11 +7,9 @@ import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import ru.pomogator.serverpomogator.domain.model.Role;
 import ru.pomogator.serverpomogator.domain.model.User;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -20,12 +18,6 @@ import java.util.List;
 @ToString
 public class JwtUser implements UserDetails {
     User user;
-
-
-//    private final Long id;
-//    private String email;
-//    private final String password;
-//    private Role role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

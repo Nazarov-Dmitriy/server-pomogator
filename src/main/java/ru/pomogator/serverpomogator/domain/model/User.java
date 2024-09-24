@@ -2,6 +2,7 @@ package ru.pomogator.serverpomogator.domain.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.Date;
 
@@ -53,4 +54,18 @@ public class User {
 
     @Column(name = "phone")
     private String phone;
+
+    @Column(name = "completed_profile")
+    private Boolean completed_profile;
+
+
+    @OneToOne( fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private FileModel avatar;
+
+    @PrePersist
+    public void prePersist() {
+        if (completed_profile == null) {
+            completed_profile = false;
+        }
+    }
 }

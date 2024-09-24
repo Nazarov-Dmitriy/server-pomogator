@@ -9,7 +9,6 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import ru.pomogator.serverpomogator.domain.model.User;
 import ru.pomogator.serverpomogator.security.JwtUser;
 
 import java.security.Key;
@@ -39,7 +38,7 @@ public class JwtService {
      * @param userDetails данные пользователя
      * @return токен
      */
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(UserDetails userDetails) throws ExpiredJwtException {
         Map<String, Object> claims = new HashMap<>();
         if (userDetails instanceof JwtUser customUserDetails) {
             claims.put("id", customUserDetails.getUser().getId());
@@ -68,7 +67,7 @@ public class JwtService {
      * @param <T>             тип данных
      * @return данные
      */
-    private <T> T extractClaim(String token, Function<Claims, T> claimsResolvers) {
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolvers) throws ExpiredJwtException{
         final Claims claims = extractAllClaims(token);
         return claimsResolvers.apply(claims);
     }
@@ -81,13 +80,11 @@ public class JwtService {
      * @return токен
      */
     private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        System.out.println("generateToken");
-        System.out.println(userDetails.getUsername());
-        var a = Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername())
+
+        return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 100000 * 60 * 24))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
-        return a;
     }
 
     /**

@@ -1,8 +1,8 @@
-version: '1.0.0'
+version: '1.0.1'
 
 services:
   backend:
-    image: dmitriynazarov/pomogator
+    image: dmitriynazarov/pomogator:1.0.1
     ports:
       - 5500:5500
 

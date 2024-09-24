@@ -6,7 +6,6 @@ import ru.pomogator.serverpomogator.utils.FolderCreate;
 
 @SpringBootApplication
 public class ServerPomogatorApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(ServerPomogatorApplication.class, args);
         FolderCreate.intialFolder();

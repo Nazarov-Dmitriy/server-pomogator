@@ -30,5 +30,9 @@ public class FileModel {
     @OneToOne( mappedBy = "file" , fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "news_id", referencedColumnName = "id")
     private NewsModel news;
+
+    @OneToOne( mappedBy = "avatar" , fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "avatar_id", referencedColumnName = "id")
+    private User user;
 }
 

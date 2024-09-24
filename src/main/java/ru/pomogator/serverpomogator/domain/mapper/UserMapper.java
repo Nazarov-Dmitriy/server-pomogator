@@ -1,19 +1,18 @@
 package ru.pomogator.serverpomogator.domain.mapper;
 
 import org.mapstruct.*;
-import ru.pomogator.serverpomogator.domain.dto.auth.AuthenticationRequest;
+import ru.pomogator.serverpomogator.domain.dto.auth.UserRequest;
 import ru.pomogator.serverpomogator.domain.dto.auth.UserResponse;
 import ru.pomogator.serverpomogator.domain.model.User;
 
-import java.util.Optional;
-
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
-      unmappedTargetPolicy = ReportingPolicy.IGNORE)
+        unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UserMapper {
+
+    @Mapping(target = "avatar", ignore = true)
     UserResponse toUserResponse(User user);
-    UserResponse toUserResponseAuthenticationRequest(AuthenticationRequest authenticationRequest);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateUserFromDto(AuthenticationRequest dto, @MappingTarget User entity);
-
+    void updateUserFromDto(UserRequest dto, @MappingTarget User user);
 }
+

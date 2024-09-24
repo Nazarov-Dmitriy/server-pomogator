@@ -1,8 +1,10 @@
 package ru.pomogator.serverpomogator.advice;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -36,15 +38,21 @@ public class ExceptionHandlerAdvice {
     @ExceptionHandler(BadRequest.class)
     public ResponseEntity<?> badRequest(BadRequest exception, HttpServletRequest req) {
         UUID id = UUID.randomUUID();
-        if(exception.getMessage().equals("Пользователь не найден")){
+        if (exception.getMessage().equals("Пользователь не найден")) {
             Map<String, String> errors = new HashMap<>();
             errors.put("email", "Пользователь не найден");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
         }
 
-        if(exception.getMessage().equals("Bad password")){
+        if (exception.getMessage().equals("Bad password")) {
             Map<String, String> errors = new HashMap<>();
             errors.put("password", "Не правильный пароль");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+        }
+
+        if (exception.getMessage().equals("Пользователь с таким email уже существует")) {
+            Map<String, String> errors = new HashMap<>();
+            errors.put("email", "Пользователь с таким email уже существует");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
         }
 
@@ -67,16 +75,29 @@ public class ExceptionHandlerAdvice {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorMessage> IllegalArgumentException (InternalServerError exception, HttpServletRequest req) {
+    public ResponseEntity<ErrorMessage> IllegalArgumentException(IllegalArgumentException exception, HttpServletRequest req) {
         UUID id = UUID.randomUUID();
         ErrorMessage errorMessage = new ErrorMessage(id, exception.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<ErrorMessage> AuthenticationException (InternalServerError exception, HttpServletRequest req) {
+    public ResponseEntity<ErrorMessage> AuthenticationException(AuthenticationException exception, HttpServletRequest req) {
         UUID id = UUID.randomUUID();
         ErrorMessage errorMessage = new ErrorMessage(id, exception.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<?> UsernameNotFoundException(UsernameNotFoundException exception, HttpServletRequest req) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("email", exception.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<?> ExpiredJwtException(ExpiredJwtException exception, HttpServletRequest req) {
+        System.out.println(111111111);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
     }
 }

@@ -17,10 +17,10 @@ public class CustomerUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
-    public JwtUser loadUserByUsername(String email) throws UsernameNotFoundException {
+    public JwtUser loadUserByUsername(String email)  {
         Optional<User> user = userRepository.findByEmail(email);
         if (user.isEmpty()) {
-            throw new BadRequest("Пользователь не найден");
+            throw new UsernameNotFoundException("Пользователь не найден");
         }
         return new JwtUser(user.get());
     }
