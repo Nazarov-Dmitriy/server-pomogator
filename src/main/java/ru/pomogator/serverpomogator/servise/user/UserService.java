@@ -16,6 +16,7 @@ import ru.pomogator.serverpomogator.repository.FileRepository;
 import ru.pomogator.serverpomogator.repository.UserRepository;
 import ru.pomogator.serverpomogator.security.JwtUser;
 import ru.pomogator.serverpomogator.utils.FileCreate;
+import ru.pomogator.serverpomogator.utils.FileDelete;
 import ru.pomogator.serverpomogator.utils.HeaderToken;
 
 import java.util.Optional;
@@ -55,6 +56,7 @@ public class UserService {
         Optional<User> user = repository.findByEmail(request.getCurrent_email());
         if (user.isPresent()) {
             userMapper.updateUserFromDto(request, user.get());
+            user.get().setCompleted_profile(true);
             repository.save(user.get());
             var responseUser = userMapper.toUserResponse(user.get());
 
@@ -97,10 +99,8 @@ public class UserService {
             var path = new StringBuilder();
             path.append("files/user/").append(user.get().getId()).append("/");
             var file = FileCreate.addFile(req.getAvatar(), path);
-            System.out.println(file);
             user.get().setAvatar(file);
             repository.save(user.get());
-            System.out.println(file.getPath());
             return new ResponseEntity<>(file.getPath(), HttpStatus.OK);
         }
         return null;
@@ -111,8 +111,9 @@ public class UserService {
         var email = jwtService.extractUserName(token);
         Optional<User> user = repository.findByEmail(email);
         if (user.isPresent()) {
-            var file = user.get().getAvatar();
-            fileRepository.delete(file);
+            var pathFile = (user.get().getAvatar().getPath()).split("/");
+            var directoryPath= pathFile[0] + "/" + pathFile[1] + "/" + pathFile[2];
+            FileDelete.deleteFile(directoryPath);
             user.get().setAvatar(null);
             repository.save(user.get());
         }

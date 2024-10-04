@@ -15,8 +15,8 @@ import java.util.Date;
 @NoArgsConstructor
 public class UserRequest {
     @Size(min = 1, max = 255, message = "Адрес электронной почты должен содержать от 5 до 255 символов", groups = {SignIn.class, SignUpOne.class, UserInfo.class})
-    @NotBlank(message = "Адрес электронной почты не может быть пустыми")
-    @Email(message = "Email адрес должен быть в формате user@example.com")
+    @NotBlank(message = "Поле не должно быть пустым")
+    @Email(message = "Email адрес должен быть в формате user@example.ru")
     private String email;
 
     @Size(min = 8, max = 255, message = "Длина пароля должна быть от 8", groups = {SignIn.class, SignUpOne.class, UserChangePassword.class})
@@ -24,15 +24,15 @@ public class UserRequest {
     private String password;
 
     @Size(min = 8, max = 255, message = "Длина пароля должна быть от 8", groups = {UserChangePassword.class})
-    @NotBlank(message = "Новый Пароль не может быть пустыми")
+    @NotBlank(message = "Поле не должно быть пустым")
     private String new_password;
 
     private Role role;
 
-    @NotEmpty(message = "Имя не должно быть пустым", groups = {UserInfo.class})
+    @NotEmpty(message = "Поле не должно быть пустым", groups = {UserInfo.class})
     private String name;
 
-    @NotEmpty(message = "Фамилия не должно быть пустой", groups = {UserInfo.class})
+    @NotEmpty(message = "Поле не должно быть пустым", groups = {UserInfo.class})
     private String surname;
 
     private String patronymic;
@@ -40,10 +40,10 @@ public class UserRequest {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date date_birth;
 
-    @NotEmpty(message = "Должность не должно быть пустой", groups = {UserInfo.class})
+    @NotEmpty(message = "Поле не должно быть пустым", groups = {UserInfo.class})
     private String position;
 
-    @NotEmpty(message = "Место работы не должно быть пустым", groups = {UserInfo.class})
+    @NotEmpty(message = "Поле не должно быть пустым", groups = {UserInfo.class})
     private String place_work;
 
     private String rank;

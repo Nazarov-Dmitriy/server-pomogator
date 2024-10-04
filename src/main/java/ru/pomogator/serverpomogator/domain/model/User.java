@@ -2,9 +2,10 @@ package ru.pomogator.serverpomogator.domain.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
+import ru.pomogator.serverpomogator.domain.model.news.FavoriteModel;
 
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Builder
@@ -58,9 +59,14 @@ public class User {
     @Column(name = "completed_profile")
     private Boolean completed_profile;
 
+    @Column(name="experience")
+    private String experience;
 
-    @OneToOne( fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private FileModel avatar;
+
+    @OneToMany(mappedBy = "user",fetch = FetchType.EAGER )
+    Set<FavoriteModel> favorite;
 
     @PrePersist
     public void prePersist() {

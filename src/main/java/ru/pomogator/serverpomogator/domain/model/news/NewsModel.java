@@ -2,10 +2,13 @@ package ru.pomogator.serverpomogator.domain.model.news;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import ru.pomogator.serverpomogator.domain.model.BaseEntity;
 import ru.pomogator.serverpomogator.domain.model.FileModel;
+import ru.pomogator.serverpomogator.domain.model.User;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Getter
@@ -15,7 +18,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@EqualsAndHashCode(callSuper = true)
 @Table(name = "NEWS")
 public class NewsModel extends BaseEntity {
     @Id
@@ -40,22 +42,27 @@ public class NewsModel extends BaseEntity {
     private int likes;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @Column(name = "tags")
     private List<TagsModel> tags;
 
     @Column(name = "video")
     private String video;
 
     @Column(name = "link_to_source")
+    @ColumnDefault("null")
     private String link_to_source;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     private CategoryModel category;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
     @ToString.Exclude
     private FileModel file;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    private User author;
+
+    @OneToMany(mappedBy = "news" ,fetch = FetchType.LAZY)
+    List<FavoriteModel> favorite;
 }
 

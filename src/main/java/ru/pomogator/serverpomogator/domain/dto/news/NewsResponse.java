@@ -5,9 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import ru.pomogator.serverpomogator.domain.model.Role;
+import ru.pomogator.serverpomogator.domain.model.User;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,4 +36,28 @@ public class NewsResponse implements Serializable {
     private String link_to_source;
     private Long category;
     private String file;
+    private UserDto author;
+
+    /**
+     * DTO for {@link ru.pomogator.serverpomogator.domain.model.User}
+     */
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Accessors(chain = true)
+    public static class UserDto implements Serializable {
+        private Long id;
+        private String email;
+        private Role role;
+        private String name;
+        private String surname;
+        private String patronymic;
+        private Date date_birth;
+        private String position;
+        private String place_work;
+        private String rank;
+        private String phone;
+        private Boolean completed_profile;
+        private String avatarPath;
+    }
 }

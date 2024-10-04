@@ -38,6 +38,10 @@ public class ExceptionHandlerAdvice {
     @ExceptionHandler(BadRequest.class)
     public ResponseEntity<?> badRequest(BadRequest exception, HttpServletRequest req) {
         UUID id = UUID.randomUUID();
+        if(!exception.getErrors().isEmpty()) {
+            return new ResponseEntity<>(exception.getErrors(), HttpStatus.BAD_REQUEST);
+        }
+
         if (exception.getMessage().equals("Пользователь не найден")) {
             Map<String, String> errors = new HashMap<>();
             errors.put("email", "Пользователь не найден");
@@ -97,7 +101,6 @@ public class ExceptionHandlerAdvice {
 
     @ExceptionHandler(ExpiredJwtException.class)
     public ResponseEntity<?> ExpiredJwtException(ExpiredJwtException exception, HttpServletRequest req) {
-        System.out.println(111111111);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
     }
 }

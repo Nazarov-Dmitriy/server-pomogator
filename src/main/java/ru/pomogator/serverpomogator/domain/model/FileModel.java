@@ -27,11 +27,10 @@ public class FileModel {
     @Column(nullable = false)
     private long size;
 
-    @OneToOne( mappedBy = "file" , fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "news_id", referencedColumnName = "id")
+    @OneToOne( mappedBy = "file" , fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private NewsModel news;
 
-    @OneToOne( mappedBy = "avatar" , fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne( mappedBy = "avatar" , fetch = FetchType.LAZY)
     @JoinColumn(name = "avatar_id", referencedColumnName = "id")
     private User user;
 }
