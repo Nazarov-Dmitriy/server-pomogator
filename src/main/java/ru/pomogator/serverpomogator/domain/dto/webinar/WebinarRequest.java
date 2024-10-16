@@ -1,34 +1,32 @@
-package ru.pomogator.serverpomogator.domain.dto.news;
+package ru.pomogator.serverpomogator.domain.dto.webinar;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Value;
-import ru.pomogator.serverpomogator.domain.model.user.User;
-import ru.pomogator.serverpomogator.domain.model.news.CategoryModel;
+import org.springframework.format.annotation.DateTimeFormat;
 import ru.pomogator.serverpomogator.domain.model.news.TagsModel;
+import ru.pomogator.serverpomogator.domain.model.user.User;
 
-import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * DTO for {@link ru.pomogator.serverpomogator.domain.model.news.NewsModel}
- */
+
 @Value
-public class NewsRequest implements Serializable {
+public class WebinarRequest {
     Long id;
     @NotBlank(message = "Поле не должно быть пустым")
     String title;
     @NotBlank(message = "Поле не должно быть пустым")
     String annotation;
-    @NotBlank(message = "Поле не должно быть пустым")
-    String article;
     @NotEmpty(message = "Поле не должно быть пустым")
     List<TagsModel> tags;
+    @NotEmpty(message = "Поле не должно быть пустым")
     String video;
-    String link_to_source;
     @NotNull(message = "Поле не должно быть пустым")
-    CategoryModel category;
-    @NotNull
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
+    private LocalDateTime date_translation;
     User author;
 }

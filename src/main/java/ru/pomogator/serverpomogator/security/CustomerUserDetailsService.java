@@ -4,9 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-import ru.pomogator.serverpomogator.domain.model.User;
-import ru.pomogator.serverpomogator.exception.BadRequest;
-import ru.pomogator.serverpomogator.repository.UserRepository;
+import ru.pomogator.serverpomogator.domain.model.user.User;
+import ru.pomogator.serverpomogator.repository.user.UserRepository;
 
 import java.util.Optional;
 

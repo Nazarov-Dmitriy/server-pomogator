@@ -60,33 +60,33 @@ public class NewsController {
         return newsServise.setLike(id, like, dislike);
     }
 
-    @GetMapping("/my-material")
-    public ResponseEntity<?> userNews(@RequestParam Long id ,@RequestParam(required = false) List<String> tags) {
-        return newsServise.userNews(id, tags);
-    }
+//    @GetMapping("/my-material")
+//    public ResponseEntity<?> userNews(@RequestParam Long id, @RequestParam(required = false) List<String> tags) {
+//        return newsServise.userNews(id, tags);
+//    }
 
     @GetMapping("/remove/{id}")
-    public ResponseEntity<?> removeNews(@PathVariable Long id ) {
+    public ResponseEntity<?> removeNews(@PathVariable Long id) {
         return newsServise.remove(id);
     }
 
     @GetMapping("/add-favorite")
-    public ResponseEntity<?> addNewsFavorite(@RequestParam Long news_id , @RequestParam Long user_id ) {
-        return newsServise.addNewsFavorite(news_id ,  user_id);
+    public ResponseEntity<?> addNewsFavorite(@RequestParam Long news_id, @RequestParam Long user_id) {
+        return newsServise.addNewsFavorite(news_id, user_id);
     }
 
     @GetMapping("/remove-favorite")
-    public ResponseEntity<?> removeNewsFavorite(@RequestParam Long news_id , @RequestParam Long user_id ) {
-        return newsServise.removeNewsFavorite(news_id ,  user_id);
+    public ResponseEntity<?> removeNewsFavorite(@RequestParam Long news_id, @RequestParam Long user_id) {
+        return newsServise.removeNewsFavorite(news_id, user_id);
     }
 
     @GetMapping("/favorite")
-    public ResponseEntity<?> getNewsFavorite(@RequestParam Long news_id , @RequestParam Long user_id ) {
-        return newsServise.getNewsFavorite(news_id ,  user_id);
+    public ResponseEntity<?> getNewsFavorite(@RequestParam Long news_id, @RequestParam Long user_id) {
+        return newsServise.getNewsFavorite(news_id, user_id);
     }
 
     @GetMapping("/favorite/user/{id}")
-    public ResponseEntity<?> getFavoriteNewsUser(@PathVariable  Long id ,@RequestParam(required = false) List<TagsModel> tags) {
-        return newsServise.getFavoriteNewsUser(id , tags);
+    public ResponseEntity<?> getFavoriteNewsUser(@PathVariable Long id, @RequestParam(required = false) List<TagsModel> tags) {
+        return newsServise.getFavoriteNewsUser(id, tags);
     }
 }

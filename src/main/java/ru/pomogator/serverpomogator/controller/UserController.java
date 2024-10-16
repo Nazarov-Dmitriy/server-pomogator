@@ -9,6 +9,8 @@ import ru.pomogator.serverpomogator.domain.dto.auth.AuthenticationResponse;
 import ru.pomogator.serverpomogator.domain.dto.auth.UserRequest;
 import ru.pomogator.serverpomogator.servise.user.UserService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
@@ -33,6 +35,11 @@ public class UserController {
     @GetMapping("/avatar/remove")
     public ResponseEntity<?> userAvatarRemove(HttpServletRequest request) {
         return userService.removeAvatar(request);
+    }
+
+    @GetMapping("/material")
+    public ResponseEntity<?> userMaterial(Long id,  @RequestParam(required = false) List<String> tags) {
+        return userService.userMaterial(id, tags);
     }
 }
 

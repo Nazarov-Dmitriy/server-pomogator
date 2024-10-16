@@ -1,6 +1,7 @@
 package ru.pomogator.serverpomogator.domain.mapper;
 
 import org.mapstruct.*;
+import ru.pomogator.serverpomogator.domain.dto.material.MaterialResponse;
 import ru.pomogator.serverpomogator.domain.dto.news.NewsRequest;
 import ru.pomogator.serverpomogator.domain.dto.news.NewsResponse;
 import ru.pomogator.serverpomogator.domain.model.news.NewsModel;
@@ -24,6 +25,12 @@ public interface NewsMapper {
     @Mapping(target = "tags", expression = "java(tagsToTags(newsModel.getTags()))")
     @Mapping(source = "author.avatar.path", target = "author.avatarPath")
     NewsResponse toNewsResponse(NewsModel newsModel);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
+    @InheritInverseConfiguration(name = "toNewsModel")
+    @Mapping(source = "file.path", target = "file")
+    @Mapping(target = "tags", expression = "java(tagsToTags(newsModel.getTags()))")
+    MaterialResponse toMaterialResponse(NewsModel newsModel);
 
     default List<Long> tagsToTags(List<TagsModel> tags) {
         return tags.stream().map(TagsModel::getId).collect(Collectors.toList());

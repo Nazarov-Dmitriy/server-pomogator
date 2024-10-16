@@ -1,4 +1,4 @@
-package ru.pomogator.serverpomogator.domain.model;
+package ru.pomogator.serverpomogator.domain.model.base;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;

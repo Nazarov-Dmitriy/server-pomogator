@@ -2,6 +2,7 @@ package ru.pomogator.serverpomogator.servise.user;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.sshd.common.config.keys.loader.openssh.kdf.BCrypt;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -10,12 +11,13 @@ import ru.pomogator.serverpomogator.domain.dto.auth.AuthenticationResponse;
 import ru.pomogator.serverpomogator.domain.dto.auth.UserRequest;
 import ru.pomogator.serverpomogator.domain.dto.auth.UserResponse;
 import ru.pomogator.serverpomogator.domain.mapper.UserMapper;
-import ru.pomogator.serverpomogator.domain.model.Role;
-import ru.pomogator.serverpomogator.domain.model.User;
+import ru.pomogator.serverpomogator.domain.model.user.Role;
+import ru.pomogator.serverpomogator.domain.model.user.User;
 import ru.pomogator.serverpomogator.exception.BadRequest;
-import ru.pomogator.serverpomogator.repository.UserRepository;
+import ru.pomogator.serverpomogator.repository.user.UserRepository;
 import ru.pomogator.serverpomogator.security.CustomerUserDetailsService;
 import ru.pomogator.serverpomogator.security.JwtUser;
+import ru.pomogator.serverpomogator.servise.mail.EmailService;
 
 import java.util.Optional;
 
@@ -30,12 +32,15 @@ public class AuthenticationService {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
 
+    @Autowired
+    EmailService emailService;
 
     public AuthenticationResponse signUp(UserRequest request) {
         var user = User.builder().email(request.getEmail()).password(passwordEncoder.encode(request.getPassword())).role(Role.ROLE_USER).build();
         userService.create(user);
         var jwtUser = new JwtUser(user);
         var jwt = jwtService.generateToken(jwtUser);
+        emailService.sendMessageRegisterUser(user, request.getPassword());
         return new AuthenticationResponse(jwt, userMapper.toUserResponse(user));
     }
 
@@ -49,7 +54,7 @@ public class AuthenticationService {
 
         var responseUser = userMapper.toUserResponse(user.getUser());
 
-        if(user.getUser().getAvatar() != null) {
+        if (user.getUser().getAvatar() != null) {
             responseUser.setAvatar(user.getUser().getAvatar().getPath());
         }
         return new AuthenticationResponse(jwt, responseUser);
@@ -71,7 +76,7 @@ public class AuthenticationService {
         var user = customerUserDetailsService.loadUserByUsername(email);
         var responseUser = userMapper.toUserResponse(user.getUser());
 
-        if(user.getUser().getAvatar() != null) {
+        if (user.getUser().getAvatar() != null) {
             responseUser.setAvatar(user.getUser().getAvatar().getPath());
         }
 

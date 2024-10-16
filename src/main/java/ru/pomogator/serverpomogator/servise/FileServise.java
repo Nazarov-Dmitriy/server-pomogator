@@ -5,7 +5,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.pomogator.serverpomogator.exception.BadRequest;
-import ru.pomogator.serverpomogator.repository.FileRepository;
+import ru.pomogator.serverpomogator.repository.file.FileRepository;
 
 @Service
 public class FileServise {

@@ -1,8 +1,10 @@
-package ru.pomogator.serverpomogator.domain.model;
+package ru.pomogator.serverpomogator.domain.model.file;
 
 import jakarta.persistence.*;
 import lombok.*;
 import ru.pomogator.serverpomogator.domain.model.news.NewsModel;
+import ru.pomogator.serverpomogator.domain.model.user.User;
+import ru.pomogator.serverpomogator.domain.model.webinar.WebinarModel;
 
 @ToString
 @Data
@@ -29,6 +31,9 @@ public class FileModel {
 
     @OneToOne( mappedBy = "file" , fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private NewsModel news;
+
+    @OneToOne( mappedBy = "preview_img" , fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    private WebinarModel webinar;
 
     @OneToOne( mappedBy = "avatar" , fetch = FetchType.LAZY)
     @JoinColumn(name = "avatar_id", referencedColumnName = "id")

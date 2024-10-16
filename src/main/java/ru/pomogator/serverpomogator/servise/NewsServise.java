@@ -2,6 +2,7 @@ package ru.pomogator.serverpomogator.servise;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,15 +17,19 @@ import ru.pomogator.serverpomogator.domain.model.news.NewsModel;
 import ru.pomogator.serverpomogator.domain.model.news.TagsModel;
 import ru.pomogator.serverpomogator.exception.BadRequest;
 import ru.pomogator.serverpomogator.exception.InternalServerError;
-import ru.pomogator.serverpomogator.repository.UserRepository;
+import ru.pomogator.serverpomogator.repository.subscribe.SubcribeRepository;
+import ru.pomogator.serverpomogator.repository.user.UserRepository;
 import ru.pomogator.serverpomogator.repository.news.CategoryRepository;
-import ru.pomogator.serverpomogator.repository.news.FavoriteRepository;
+import ru.pomogator.serverpomogator.repository.favorite.FavoriteNewsRepository;
 import ru.pomogator.serverpomogator.repository.news.NewsRepository;
-import ru.pomogator.serverpomogator.repository.news.TagsRepository;
+import ru.pomogator.serverpomogator.repository.tags.TagsRepository;
+import ru.pomogator.serverpomogator.servise.mail.EmailService;
 import ru.pomogator.serverpomogator.utils.FileCreate;
 import ru.pomogator.serverpomogator.utils.FileDelete;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -34,9 +39,12 @@ public class NewsServise {
     private final TagsRepository tagsRepository;
     private final CategoryRepository categoryRepository;
     private final NewsMapper newsMapper;
-    private final FavoriteRepository favoriteRepository;
+    private final FavoriteNewsRepository favoriteRepository;
+    private final SubcribeRepository subcribeRepository;
 
-    @Transactional
+    @Autowired
+    EmailService emailService;
+
     public ResponseEntity<Void> addNews(NewsRequest req, MultipartFile file) {
         try {
             if (req.getVideo().isEmpty() && file == null) {
@@ -50,6 +58,13 @@ public class NewsServise {
                 path.append("files/news/").append(news.getId()).append("/");
                 var new_file = FileCreate.addFile(file, path);
                 news.setFile(new_file);
+            }
+            var subsribe = subcribeRepository.findAll();
+            var pathMaterial = "/blog/article/" + news.getId();
+            if (!subsribe.isEmpty()) {
+                for (var item : subsribe) {
+                    emailService.sendMessageMaterial(item.getEmail(), news.getTitle(), news.getAnnotation(), pathMaterial);
+                }
             }
 
             return new ResponseEntity<>(HttpStatus.OK);
@@ -103,8 +118,12 @@ public class NewsServise {
     @Transactional
     public ResponseEntity<?> get(Long id, Long user_id) {
         try {
-            var news = newsRepository.findById(id).orElseThrow();
-            return new ResponseEntity<>(newsMapper.toNewsResponse(news), HttpStatus.OK);
+            var news = newsRepository.findById(id);
+            if (news.isPresent()) {
+                return new ResponseEntity<>(newsMapper.toNewsResponse(news.get()), HttpStatus.OK);
+            }else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
         } catch (Exception e) {
             throw new BadRequest("Error input data");
         }
@@ -151,10 +170,13 @@ public class NewsServise {
     }
 
     public ResponseEntity<?> setShow(Long id) {
-        var news = newsRepository.findById(id).orElseThrow();
-        news.setShows(news.getShows() + 1);
-        newsRepository.save(news);
-        return new ResponseEntity<>(HttpStatus.OK);
+        var news = newsRepository.findById(id);
+        if (news.isPresent()) {
+            news.get().setShows(news.get().getShows() + 1);
+            newsRepository.save(news.get());
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @Transactional
@@ -176,7 +198,6 @@ public class NewsServise {
     public ResponseEntity<?> userNews(Long id, List<String> tags) {
         try {
             List<NewsModel> news = null;
-
             if (tags != null) {
                 news = newsRepository.findByAuthorIdAndTagsIn(id, tags);
             } else {

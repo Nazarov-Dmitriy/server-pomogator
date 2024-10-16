@@ -1,8 +1,10 @@
-package ru.pomogator.serverpomogator.domain.model;
+package ru.pomogator.serverpomogator.domain.model.user;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ru.pomogator.serverpomogator.domain.model.file.FileModel;
 import ru.pomogator.serverpomogator.domain.model.news.FavoriteModel;
+import ru.pomogator.serverpomogator.domain.model.webinar.FavoriteWebinarModel;
 
 import java.util.Date;
 import java.util.Set;
@@ -59,14 +61,14 @@ public class User {
     @Column(name = "completed_profile")
     private Boolean completed_profile;
 
-    @Column(name="experience")
-    private String experience;
-
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private FileModel avatar;
 
-    @OneToMany(mappedBy = "user",fetch = FetchType.EAGER )
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     Set<FavoriteModel> favorite;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    Set<FavoriteWebinarModel> favorite_webinar;
 
     @PrePersist
     public void prePersist() {

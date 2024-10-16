@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.pomogator.serverpomogator.domain.model.Role;
+import ru.pomogator.serverpomogator.domain.model.user.Role;
 
 import java.util.Date;
 

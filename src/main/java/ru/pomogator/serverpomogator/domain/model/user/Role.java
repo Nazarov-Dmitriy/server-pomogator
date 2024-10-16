@@ -1,4 +1,4 @@
-package ru.pomogator.serverpomogator.domain.model;
+package ru.pomogator.serverpomogator.domain.model.user;
 
 public enum Role {
     ROLE_USER,

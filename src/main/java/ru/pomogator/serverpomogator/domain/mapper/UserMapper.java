@@ -3,7 +3,7 @@ package ru.pomogator.serverpomogator.domain.mapper;
 import org.mapstruct.*;
 import ru.pomogator.serverpomogator.domain.dto.auth.UserRequest;
 import ru.pomogator.serverpomogator.domain.dto.auth.UserResponse;
-import ru.pomogator.serverpomogator.domain.model.User;
+import ru.pomogator.serverpomogator.domain.model.user.User;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
         unmappedTargetPolicy = ReportingPolicy.IGNORE)

@@ -9,16 +9,25 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.pomogator.serverpomogator.domain.dto.auth.AuthenticationResponse;
 import ru.pomogator.serverpomogator.domain.dto.auth.UserRequest;
+import ru.pomogator.serverpomogator.domain.dto.material.MaterialResponse;
+import ru.pomogator.serverpomogator.domain.dto.news.NewsResponse;
+import ru.pomogator.serverpomogator.domain.mapper.NewsMapper;
 import ru.pomogator.serverpomogator.domain.mapper.UserMapper;
-import ru.pomogator.serverpomogator.domain.model.User;
+import ru.pomogator.serverpomogator.domain.mapper.WebinarMapper;
+import ru.pomogator.serverpomogator.domain.model.news.NewsModel;
+import ru.pomogator.serverpomogator.domain.model.user.User;
+import ru.pomogator.serverpomogator.domain.model.webinar.WebinarModel;
 import ru.pomogator.serverpomogator.exception.BadRequest;
-import ru.pomogator.serverpomogator.repository.FileRepository;
-import ru.pomogator.serverpomogator.repository.UserRepository;
+import ru.pomogator.serverpomogator.repository.news.NewsRepository;
+import ru.pomogator.serverpomogator.repository.user.UserRepository;
+import ru.pomogator.serverpomogator.repository.webinar.WebinarRepository;
 import ru.pomogator.serverpomogator.security.JwtUser;
 import ru.pomogator.serverpomogator.utils.FileCreate;
 import ru.pomogator.serverpomogator.utils.FileDelete;
 import ru.pomogator.serverpomogator.utils.HeaderToken;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -29,7 +38,11 @@ public class UserService {
     private final UserMapper userMapper;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
-    private final FileRepository fileRepository;
+    private final NewsRepository newsRepository;
+    private final WebinarRepository webinarRepository;
+    private final NewsMapper newsMapper;
+    private final WebinarMapper webinarMapper;
+
 
     public User save(User user) {
         return repository.save(user);
@@ -112,11 +125,45 @@ public class UserService {
         Optional<User> user = repository.findByEmail(email);
         if (user.isPresent()) {
             var pathFile = (user.get().getAvatar().getPath()).split("/");
-            var directoryPath= pathFile[0] + "/" + pathFile[1] + "/" + pathFile[2];
+            var directoryPath = pathFile[0] + "/" + pathFile[1] + "/" + pathFile[2];
             FileDelete.deleteFile(directoryPath);
             user.get().setAvatar(null);
             repository.save(user.get());
         }
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> userMaterial(Long id, List<String> tags) {
+        try {
+            List<NewsModel> news = null;
+            List<WebinarModel> webianar = null;
+            if (tags != null) {
+                news = newsRepository.findByAuthorIdAndTagsIn(id, tags);
+                webianar = webinarRepository.findByAuthorIdAndTagsIn(id, tags);
+            } else {
+                news = newsRepository.findByAuthorId(id);
+                webianar = webinarRepository.findByAuthorId(id);
+            }
+
+            var list = new ArrayList<MaterialResponse>();
+            if (!news.isEmpty()) {
+                for (var item : news) {
+                    var material = newsMapper.toMaterialResponse(item);
+                    material.setType("article");
+                    list.add(material);
+                }
+            }
+
+            if (!webianar.isEmpty()) {
+                for (var item : webianar) {
+                    var material = webinarMapper.toMaterialResponse(item);
+                    material.setType("webinar");
+                    list.add(material);
+                }
+            }
+            return new ResponseEntity<>(list, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

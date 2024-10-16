@@ -5,8 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import ru.pomogator.serverpomogator.domain.model.Role;
-import ru.pomogator.serverpomogator.domain.model.User;
+import ru.pomogator.serverpomogator.domain.model.user.Role;
+import ru.pomogator.serverpomogator.domain.model.user.User;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -37,9 +37,11 @@ public class NewsResponse implements Serializable {
     private Long category;
     private String file;
     private UserDto author;
+    private String type="article";
+
 
     /**
-     * DTO for {@link ru.pomogator.serverpomogator.domain.model.User}
+     * DTO for {@link User}
      */
     @Data
     @AllArgsConstructor

@@ -42,11 +42,10 @@ public class SecurityConfiguration {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(request ->
-                        request.requestMatchers("/auth/**", "/files/**").permitAll()
-//                                .requestMatchers("/news/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/news/**")
-                                .permitAll().requestMatchers(HttpMethod.POST, "/news/**")
-                                .authenticated().requestMatchers(HttpMethod.PUT, "/news/**").authenticated()
+                        request.requestMatchers("/auth/**", "/files/**", "/images/**", "/subscribe/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/news/**","/webinar/**")
+                                .permitAll().requestMatchers(HttpMethod.POST, "/news/**","/webinar/**")
+                                .authenticated().requestMatchers(HttpMethod.PUT, "/news/**","/webinar/**").authenticated()
                                 .requestMatchers("/endpoint", "/admin/**").hasRole("ADMIN")
                                 .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
@@ -75,7 +74,7 @@ public class SecurityConfiguration {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(List.of("http://localhost:5172", "http://pomogator.i99620sd.beget.tech/"));
+        corsConfiguration.setAllowedOrigins(List.of("http://localhost:5172", "http://pomogator.i99620sd.beget.tech/", "http://dddd.ru/"));
         corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         corsConfiguration.setAllowCredentials(true);
         corsConfiguration.setAllowedHeaders(List.of("*"));

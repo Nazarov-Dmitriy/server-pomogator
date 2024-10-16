@@ -7,7 +7,7 @@ import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import ru.pomogator.serverpomogator.domain.model.User;
+import ru.pomogator.serverpomogator.domain.model.user.User;
 
 import java.util.Collection;
 import java.util.List;

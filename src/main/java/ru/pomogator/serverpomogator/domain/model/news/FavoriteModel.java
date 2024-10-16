@@ -2,10 +2,7 @@ package ru.pomogator.serverpomogator.domain.model.news;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.proxy.HibernateProxy;
-import ru.pomogator.serverpomogator.domain.model.User;
-
-import java.util.Objects;
+import ru.pomogator.serverpomogator.domain.model.user.User;
 
 @Getter
 @Setter
