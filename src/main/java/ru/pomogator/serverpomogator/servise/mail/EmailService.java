@@ -79,7 +79,7 @@ public class EmailService {
         }
     }
 
-    public void sendMessageMaterial(String email, String title, String description,  String path) {
+    public void sendMessageMaterial(String email, String title, String description, String path) {
         try {
             var url =urlFrontend.split(",")[0] + path;
             Map<String, String> params = new HashMap<>();
@@ -89,6 +89,24 @@ public class EmailService {
             params.put("description", description);
             params.put("template", "material.ftlh");
             params.put("link_sait", url);
+            System.out.println(params);
+            sendSimpleEmail(params);
+        } catch (Exception e) {
+            throw new InternalServerError(e.getMessage());
+        }
+    }
+
+    public void sendMessageWebinar(String email, String title, String description, String path, String date_translation) {
+        try {
+            var url =urlFrontend.split(",")[0] + path;
+            Map<String, String> params = new HashMap<>();
+            params.put("email",email);
+            params.put("subject", title);
+            params.put("title", title);
+            params.put("description", description);
+            params.put("template", "material-webinar.ftlh");
+            params.put("link_sait", url);
+            params.put("date_translation", date_translation);
             System.out.println(params);
             sendSimpleEmail(params);
         } catch (Exception e) {

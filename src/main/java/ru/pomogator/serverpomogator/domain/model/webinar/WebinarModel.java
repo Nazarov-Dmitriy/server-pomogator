@@ -37,7 +37,7 @@ public class WebinarModel extends BaseEntity {
     @Column(name = "likes", nullable = false)
     private int likes;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     private List<TagsModel> tags;
 
     @Column(name = "video")
@@ -46,7 +46,7 @@ public class WebinarModel extends BaseEntity {
     @Column(name = "date_translation")
     private Date date_translation;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private FileModel preview_img;
 
     @ManyToOne(fetch = FetchType.EAGER)

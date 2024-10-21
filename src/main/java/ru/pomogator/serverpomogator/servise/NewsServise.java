@@ -17,12 +17,12 @@ import ru.pomogator.serverpomogator.domain.model.news.NewsModel;
 import ru.pomogator.serverpomogator.domain.model.news.TagsModel;
 import ru.pomogator.serverpomogator.exception.BadRequest;
 import ru.pomogator.serverpomogator.exception.InternalServerError;
-import ru.pomogator.serverpomogator.repository.subscribe.SubcribeRepository;
-import ru.pomogator.serverpomogator.repository.user.UserRepository;
-import ru.pomogator.serverpomogator.repository.news.CategoryRepository;
 import ru.pomogator.serverpomogator.repository.favorite.FavoriteNewsRepository;
+import ru.pomogator.serverpomogator.repository.news.CategoryRepository;
 import ru.pomogator.serverpomogator.repository.news.NewsRepository;
+import ru.pomogator.serverpomogator.repository.subscribe.SubcribeRepository;
 import ru.pomogator.serverpomogator.repository.tags.TagsRepository;
+import ru.pomogator.serverpomogator.repository.user.UserRepository;
 import ru.pomogator.serverpomogator.servise.mail.EmailService;
 import ru.pomogator.serverpomogator.utils.FileCreate;
 import ru.pomogator.serverpomogator.utils.FileDelete;
@@ -57,7 +57,10 @@ public class NewsServise {
                 var path = new StringBuilder();
                 path.append("files/news/").append(news.getId()).append("/");
                 var new_file = FileCreate.addFile(file, path);
+                System.out.println(new_file);
                 news.setFile(new_file);
+                newsRepository.save(news);
+                System.out.println(news);
             }
             var subsribe = subcribeRepository.findAll();
             var pathMaterial = "/blog/article/" + news.getId();
@@ -78,7 +81,6 @@ public class NewsServise {
         try {
             var news = newsRepository.findById(req.getId());
             NewsModel edit_news = null;
-
 
             if (news.isPresent()) {
                 edit_news = newsRepository.save(newsMapper.partialUpdate(req, news.get()));
@@ -121,7 +123,7 @@ public class NewsServise {
             var news = newsRepository.findById(id);
             if (news.isPresent()) {
                 return new ResponseEntity<>(newsMapper.toNewsResponse(news.get()), HttpStatus.OK);
-            }else {
+            } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
@@ -195,35 +197,13 @@ public class NewsServise {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    public ResponseEntity<?> userNews(Long id, List<String> tags) {
-        try {
-            List<NewsModel> news = null;
-            if (tags != null) {
-                news = newsRepository.findByAuthorIdAndTagsIn(id, tags);
-            } else {
-                news = newsRepository.findByAuthorId(id);
-            }
-
-            var list = new ArrayList<NewsResponse>();
-            if (!news.isEmpty()) {
-                for (var item : news) {
-                    list.add(newsMapper.toNewsResponse(item));
-                }
-            }
-            return new ResponseEntity<>(list, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
     @Transactional
     public ResponseEntity<?> remove(Long id) {
         try {
             var news = newsRepository.findById(id);
-
             newsRepository.deleteById(id);
 
-            if (news.isPresent()) {
+            if (news.isPresent() && news.get().getFile() != null) {
                 var pathFile = (news.get().getFile().getPath().split("/"));
                 var directoryPath = pathFile[0] + "/" + pathFile[1] + "/" + pathFile[2];
                 FileDelete.deleteFile(directoryPath, true);
@@ -231,6 +211,7 @@ public class NewsServise {
             return new ResponseEntity<>(HttpStatus.OK);
 
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

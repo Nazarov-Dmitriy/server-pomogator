@@ -16,7 +16,6 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @Table(name = "NEWS")
 public class NewsModel extends BaseEntity {
     @Id
@@ -54,8 +53,7 @@ public class NewsModel extends BaseEntity {
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     private CategoryModel category;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
-    @ToString.Exclude
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private FileModel file;
 
     @ManyToOne(fetch = FetchType.EAGER)

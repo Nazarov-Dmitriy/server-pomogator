@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import ru.pomogator.serverpomogator.domain.dto.auth.AuthenticationResponse;
 import ru.pomogator.serverpomogator.domain.dto.auth.UserRequest;
 import ru.pomogator.serverpomogator.domain.dto.material.MaterialResponse;
-import ru.pomogator.serverpomogator.domain.dto.news.NewsResponse;
 import ru.pomogator.serverpomogator.domain.mapper.NewsMapper;
 import ru.pomogator.serverpomogator.domain.mapper.UserMapper;
 import ru.pomogator.serverpomogator.domain.mapper.WebinarMapper;
@@ -27,6 +26,7 @@ import ru.pomogator.serverpomogator.utils.FileDelete;
 import ru.pomogator.serverpomogator.utils.HeaderToken;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -135,14 +135,14 @@ public class UserService {
 
     public ResponseEntity<?> userMaterial(Long id, List<String> tags) {
         try {
-            List<NewsModel> news = null;
-            List<WebinarModel> webianar = null;
+            List<NewsModel> news;
+            List<WebinarModel> webinar;
             if (tags != null) {
                 news = newsRepository.findByAuthorIdAndTagsIn(id, tags);
-                webianar = webinarRepository.findByAuthorIdAndTagsIn(id, tags);
+                webinar = webinarRepository.findByAuthorIdAndTagsIn(id, tags);
             } else {
                 news = newsRepository.findByAuthorId(id);
-                webianar = webinarRepository.findByAuthorId(id);
+                webinar = webinarRepository.findByAuthorId(id);
             }
 
             var list = new ArrayList<MaterialResponse>();
@@ -154,13 +154,15 @@ public class UserService {
                 }
             }
 
-            if (!webianar.isEmpty()) {
-                for (var item : webianar) {
+            if (!webinar.isEmpty()) {
+                for (var item : webinar) {
                     var material = webinarMapper.toMaterialResponse(item);
                     material.setType("webinar");
                     list.add(material);
                 }
             }
+
+            list.sort(Comparator.comparing(MaterialResponse::getCreatedAt).reversed());
             return new ResponseEntity<>(list, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

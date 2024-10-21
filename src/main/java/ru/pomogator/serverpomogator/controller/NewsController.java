@@ -60,11 +60,6 @@ public class NewsController {
         return newsServise.setLike(id, like, dislike);
     }
 
-//    @GetMapping("/my-material")
-//    public ResponseEntity<?> userNews(@RequestParam Long id, @RequestParam(required = false) List<String> tags) {
-//        return newsServise.userNews(id, tags);
-//    }
-
     @GetMapping("/remove/{id}")
     public ResponseEntity<?> removeNews(@PathVariable Long id) {
         return newsServise.remove(id);

@@ -26,12 +26,11 @@ public class WebinarController {
         return webinarServise.addWebinar(req, preview_img);
     }
 
-    //
-//    @PutMapping(path = "/edit", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-//    public ResponseEntity<?> editNews(@Validated NewsRequest req, @ModelAttribute MultipartFile file) {
-//        return newsServise.editNews(req, file);
-//    }
-//
+    @PutMapping(path = "/edit", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> editWebinar(@Validated WebinarRequest req, @ModelAttribute MultipartFile preview_img) {
+        return webinarServise.editWabinar(req, preview_img);
+    }
+
     @GetMapping("/list")
     public ResponseEntity<?> list(@RequestParam(required = false) List<String> tags) {
         return webinarServise.list(tags);
@@ -73,25 +72,8 @@ public class WebinarController {
         return webinarServise.getFavoriteWebinarUser(id, tags);
     }
 
-
-//
-
-//
-
-//
-//    @GetMapping("/my-material")
-//    public ResponseEntity<?> userNews(@RequestParam Long id, @RequestParam(required = false) List<String> tags) {
-//        return newsServise.userNews(id, tags);
-//    }
-//
-//    @GetMapping("/remove/{id}")
-//    public ResponseEntity<?> removeNews(@PathVariable Long id) {
-//        return newsServise.remove(id);
-//    }
-//
-
-//
-
-//
-
+    @GetMapping("/remove/{id}")
+    public ResponseEntity<?> removeWebinar(@PathVariable Long id) {
+        return webinarServise.remove(id);
+    }
 }

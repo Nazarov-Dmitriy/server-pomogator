@@ -32,7 +32,7 @@ public class FileModel {
     @OneToOne( mappedBy = "file" , fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private NewsModel news;
 
-    @OneToOne( mappedBy = "preview_img" , fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToOne( mappedBy = "preview_img")
     private WebinarModel webinar;
 
     @OneToOne( mappedBy = "avatar" , fetch = FetchType.LAZY)

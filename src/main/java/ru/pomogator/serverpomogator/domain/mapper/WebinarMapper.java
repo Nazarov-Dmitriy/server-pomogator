@@ -2,8 +2,10 @@ package ru.pomogator.serverpomogator.domain.mapper;
 
 import org.mapstruct.*;
 import ru.pomogator.serverpomogator.domain.dto.material.MaterialResponse;
+import ru.pomogator.serverpomogator.domain.dto.news.NewsRequest;
 import ru.pomogator.serverpomogator.domain.dto.webinar.WebinarRequest;
 import ru.pomogator.serverpomogator.domain.dto.webinar.WebinarResponse;
+import ru.pomogator.serverpomogator.domain.model.news.NewsModel;
 import ru.pomogator.serverpomogator.domain.model.news.TagsModel;
 import ru.pomogator.serverpomogator.domain.model.webinar.WebinarModel;
 
@@ -13,6 +15,9 @@ import java.util.stream.Collectors;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface WebinarMapper {
     WebinarModel toWebinarModel(WebinarRequest webinarRequest);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    WebinarModel partialUpdate(WebinarRequest webinarRequest, @MappingTarget WebinarModel webinarModel);
 
     @Mapping(target = "tags", expression = "java(tagsToTags(webinarModel.getTags()))")
     @Mapping(source = "preview_img.path", target = "preview_img")

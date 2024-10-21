@@ -16,6 +16,7 @@ import ru.pomogator.serverpomogator.domain.model.webinar.FavoriteWebinarKey;
 import ru.pomogator.serverpomogator.domain.model.webinar.FavoriteWebinarModel;
 import ru.pomogator.serverpomogator.domain.model.webinar.WebinarModel;
 import ru.pomogator.serverpomogator.exception.BadRequest;
+import ru.pomogator.serverpomogator.exception.InternalServerError;
 import ru.pomogator.serverpomogator.repository.favorite.FavoriteWebinarRepository;
 import ru.pomogator.serverpomogator.repository.news.CategoryRepository;
 import ru.pomogator.serverpomogator.repository.news.NewsRepository;
@@ -25,7 +26,9 @@ import ru.pomogator.serverpomogator.repository.user.UserRepository;
 import ru.pomogator.serverpomogator.repository.webinar.WebinarRepository;
 import ru.pomogator.serverpomogator.servise.mail.EmailService;
 import ru.pomogator.serverpomogator.utils.FileCreate;
+import ru.pomogator.serverpomogator.utils.FileDelete;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,19 +57,27 @@ public class WebinarServise {
                 path.append("files/webinar/").append(webinar.getId()).append("/");
                 var new_file = FileCreate.addFile(preview_img, path);
                 webinar.setPreview_img(new_file);
+                webinarRepository.save(webinar);
+
+                var subsribe = subcribeRepository.findAll();
+                var pathMaterial = "/webinar/" + webinar.getId();
+                var dateString = new StringBuilder();
+                dateString.append(req.getDate_translation().getDayOfMonth())
+                        .append(".").append(req.getDate_translation().getMonthValue())
+                        .append(".").append(req.getDate_translation().getYear()).append(" ")
+                        .append(req.getDate_translation().getHour() + 3).append(":")
+                        .append(req.getDate_translation().getMinute());
+
+                if (!subsribe.isEmpty()) {
+                    for (var item : subsribe) {
+                        emailService.sendMessageWebinar(item.getEmail(), "Вебинар: " + webinar.getTitle(), webinar.getAnnotation(), pathMaterial, String.valueOf(dateString));
+                    }
+                }
             } else {
                 HashMap<String, String> errors = new HashMap<>();
                 errors.put("preview_img", "Файл не может быть пустым");
                 throw new BadRequest("error", errors);
             }
-
-//            var subsribe = subcribeRepository.findAll();
-//            var pathMaterial = "/blog/article/" + news.getId();
-//            if (!subsribe.isEmpty()) {
-//                for (var item : subsribe) {
-//                    emailService.sendMessageMaterial(item.getEmail(), news.getTitle(), news.getAnnotation(), pathMaterial);
-//                }
-//            }
 
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EmptyResultDataAccessException e) {
@@ -143,10 +154,6 @@ public class WebinarServise {
         try {
             var favoriteKey = new FavoriteWebinarKey(webinar_id, user_id);
             var favorite = new FavoriteWebinarModel(favoriteKey);
-            System.out.println(favoriteKey);
-            System.out.println(favorite);
-            System.out.println(webinar_id);
-            System.out.println(user_id);
             favoriteWebinarRepository.save(favorite);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
@@ -201,99 +208,52 @@ public class WebinarServise {
         }
     }
 
-    //    public ResponseEntity<?> userNews(Long id, List<String> tags) {
-//        try {
-//            List<NewsModel> news = null;
-//
-//            if (tags != null) {
-//                news = newsRepository.findByAuthorIdAndTagsIn(id, tags);
-//            } else {
-//                news = newsRepository.findByAuthorId(id);
-//            }
-//
-//            var list = new ArrayList<NewsResponse>();
-//            if (!news.isEmpty()) {
-//                for (var item : news) {
-//                    list.add(newsMapper.toNewsResponse(item));
-//                }
-//            }
-//            return new ResponseEntity<>(list, HttpStatus.OK);
-//        } catch (Exception e) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//    }
+    public ResponseEntity<?> editWabinar(WebinarRequest req, MultipartFile previewImg) {
+        try {
+            var webinar = webinarRepository.findById(req.getId());
+            WebinarModel edit_news;
 
-//    @Transactional
-//    public ResponseEntity<Void> editNews(NewsRequest req, MultipartFile file) {
-//        try {
-//            var news = newsRepository.findById(req.getId());
-//            NewsModel edit_news = null;
-//
-//
-//            if (news.isPresent()) {
-//                edit_news = newsRepository.save(newsMapper.partialUpdate(req, news.get()));
-//                var currentFile = news.get().getFile();
-//
-//                if (file != null) {
-//
-//                    if (currentFile != null) {
-//                        var pathFile = (currentFile.getPath().split("/"));
-//                        var directoryPath = pathFile[0] + "/" + pathFile[1] + "/" + pathFile[2];
-//                        FileDelete.deleteFile(directoryPath);
-//                    }
-//
-//                    var path = new StringBuilder();
-//                    path.append("files/news/").append(edit_news.getId()).append("/");
-//                    var new_file = FileCreate.addFile(file, path);
-//                    edit_news.setFile(new_file);
-//                    edit_news.setVideo(null);
-//                }
-//
-//                if (!req.getVideo().isEmpty()) {
-//                    if (currentFile != null) {
-//                        var pathFile = (currentFile.getPath().split("/"));
-//                        var directoryPath = pathFile[0] + "/" + pathFile[1] + "/" + pathFile[2];
-//                        FileDelete.deleteFile(directoryPath);
-//                    }
-//                    edit_news.setFile(null);
-//                }
-//            }
-//
-//            return new ResponseEntity<>(HttpStatus.OK);
-//        } catch (EmptyResultDataAccessException e) {
-//            throw new InternalServerError("Error input data");
-//        }
-//    }
-//
+            if (webinar.isPresent()) {
+                edit_news = webinarRepository.save(webinarMapper.partialUpdate(req, webinar.get()));
+                var currentFile = webinar.get().getPreview_img();
 
+                if (previewImg != null) {
+                    if (currentFile != null) {
+                        var pathFile = (currentFile.getPath().split("/"));
+                        var directoryPath = pathFile[0] + "/" + pathFile[1] + "/" + pathFile[2];
+                        FileDelete.deleteFile(directoryPath);
+                    }
 
-//
+                    var path = new StringBuilder();
+                    path.append("files/webinar/").append(edit_news.getId()).append("/");
+                    var new_file = FileCreate.addFile(previewImg, path);
+                    edit_news.setPreview_img(new_file);
+                }
+            }
 
-//
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (EmptyResultDataAccessException e) {
+            throw new InternalServerError("Error input data");
+        }
+    }
 
-//
-//    @Transactional
-//    public ResponseEntity<?> remove(Long id) {
-//        try {
-//            var news = newsRepository.findById(id);
-//
-//            newsRepository.deleteById(id);
-//
-//            if (news.isPresent()) {
-//                var pathFile = (news.get().getFile().getPath().split("/"));
-//                var directoryPath = pathFile[0] + "/" + pathFile[1] + "/" + pathFile[2];
-//                FileDelete.deleteFile(directoryPath, true);
-//            }
-//            return new ResponseEntity<>(HttpStatus.OK);
-//
-//        } catch (Exception e) {
-//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
-//
+    @Transactional
+    public ResponseEntity<?> remove(Long id) {
+        try {
+            var webinar = webinarRepository.findById(id);
+            webinarRepository.deleteById(id);
 
-//
+            if (webinar.isPresent()) {
+                var pathFile = (webinar.get().getPreview_img().getPath().split("/"));
+                var directoryPath = pathFile[0] + "/" + pathFile[1] + "/" + pathFile[2];
+                FileDelete.deleteFile(directoryPath, true);
+            }
+            return new ResponseEntity<>(HttpStatus.OK);
 
-
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
 
