@@ -10,9 +10,11 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.pomogator.serverpomogator.domain.dto.news.NewsRequest;
 import ru.pomogator.serverpomogator.domain.dto.webinar.WebinarRequest;
 import ru.pomogator.serverpomogator.domain.model.news.TagsModel;
+import ru.pomogator.serverpomogator.domain.model.user.User;
 import ru.pomogator.serverpomogator.servise.NewsServise;
 import ru.pomogator.serverpomogator.servise.webinar.WebinarServise;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -22,13 +24,13 @@ public class WebinarController {
     private final WebinarServise webinarServise;
 
     @PostMapping(path = "/add", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> addNews(@Validated WebinarRequest req, @ModelAttribute MultipartFile preview_img) {
+    public ResponseEntity<?> addWebinar(@Validated WebinarRequest req, @ModelAttribute MultipartFile preview_img) {
         return webinarServise.addWebinar(req, preview_img);
     }
 
     @PutMapping(path = "/edit", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> editWebinar(@Validated WebinarRequest req, @ModelAttribute MultipartFile preview_img) {
-        return webinarServise.editWabinar(req, preview_img);
+        return webinarServise.editWebinar(req, preview_img);
     }
 
     @GetMapping("/list")
@@ -37,13 +39,12 @@ public class WebinarController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> news(@PathVariable Long id) {
+    public ResponseEntity<?> webinar(@PathVariable Long id) {
         return webinarServise.get(id);
     }
 
     @GetMapping("/show/{id}")
     public ResponseEntity<?> setShow(@PathVariable Long id) {
-        System.out.println(111);
         return webinarServise.setShow(id);
     }
 
@@ -75,5 +76,20 @@ public class WebinarController {
     @GetMapping("/remove/{id}")
     public ResponseEntity<?> removeWebinar(@PathVariable Long id) {
         return webinarServise.remove(id);
+    }
+
+    @GetMapping("/subscribe")
+    public ResponseEntity<?> subscribeWebinar(@RequestParam Long webinar_id, @RequestParam List<User> user) {
+        return webinarServise.subscribeWebinar(webinar_id, user);
+    }
+
+    @GetMapping("/get-subscribe")
+    public ResponseEntity<?> getSubscribeUser(@RequestParam Long webinar_id, @RequestParam List<User> user) {
+        return webinarServise.getSubscribeUser(webinar_id, user);
+    }
+
+    @GetMapping("/set-status")
+    public ResponseEntity<?> setStatus(@RequestParam Long webinar_id) {
+                return webinarServise.setStatus(webinar_id);
     }
 }

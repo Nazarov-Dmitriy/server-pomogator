@@ -530,12 +530,10 @@
                                                                 style="word-break: break-word; -webkit-hyphens: none; -moz-hyphens: none; hyphens: none; border-collapse: collapse !important; vertical-align: top; text-align: left; width: 100%; color: #222222; font-family: Helvetica, Arial, sans-serif; font-weight: normal; font-size: 14px; background: transparent repeat center center; margin: 0; padding: 0px 10px;"
                                                                 align="left" bgcolor="transparent" valign="top">
                                                                 <p style="text-align: left; color: #222222; font-family: Helvetica, Arial, sans-serif; font-weight: normal; font-size: 14px; line-height: 1.3; margin: 0 0 10px; padding: 0;"
-                                                                   align="left"><span
-                                                                            style="font-size: 26px;"><strong>${title}</strong></span>
+                                                                   align="left"><span style="font-size: 18px;"><strong>Сегодня состоится вебинар по теме ${theme}</strong></span>
                                                                 </p>
                                                                 <p style="text-align: left; color: #222222; font-family: Helvetica, Arial, sans-serif; font-weight: normal; font-size: 14px; line-height: 1.3; margin: 0 0 10px; padding: 0;"
-                                                                   align="left"><span
-                                                                            style="font-size: 18px;">${description}.</span>
+                                                                   align="left"><span style="font-size: 18px;"><strong>Время проведения: ${date}</strong></span>
                                                                 </p>
                                                             </td>
                                                         </tr>
@@ -588,9 +586,7 @@
                                                             <td class=""
                                                                 style="word-break: break-word; -webkit-hyphens: none; -moz-hyphens: none; hyphens: none; border-collapse: collapse !important; vertical-align: top; text-align: left; width: 100%; color: #222222; font-family: Helvetica, Arial, sans-serif; font-weight: normal; font-size: 14px; background: transparent repeat center center; margin: 0; padding: 0px 10px;"
                                                                 align="left" bgcolor="transparent" valign="top">
-                                                                <p style="color: #222222; font-family: Helvetica, Arial, sans-serif; font-weight: normal; font-size: 14px; text-align: left; line-height: 1.3; margin: 0 0 10px; padding: 0;"
-                                                                   align="left"><span style="font-size: 18px;">Вебинар состоится: ${date_translation}</span>
-                                                                </p>
+
                                                             </td>
                                                         </tr>
                                                         </tbody>
@@ -652,7 +648,7 @@
                                                                 </v:roundrect>
                                                                 <![endif]-->
                                                                 <!--[if !mso]>
-                                                                -->
+                                                                <!---->
                                                                 <a href="${link_sait}"
                                                                    style="line-height: 16px; font-size: 16px !important; display: inline-block; border-radius: 7px; -webkit-border-radius: 7px; -moz-border-radius: 7px; color: #ffffff; text-decoration: none; font-weight: bold; font-family: Helvetica, Arial, sans-serif; text-align: center; height: 100%; width: auto; background: #f84343 repeat center center; padding: 7px 20px;">Перейти
                                                                     на сайт</a>

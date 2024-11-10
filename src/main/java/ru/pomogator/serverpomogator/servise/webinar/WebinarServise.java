@@ -6,17 +6,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.pomogator.serverpomogator.domain.dto.webinar.WebinarRequest;
 import ru.pomogator.serverpomogator.domain.dto.webinar.WebinarResponse;
 import ru.pomogator.serverpomogator.domain.mapper.WebinarMapper;
 import ru.pomogator.serverpomogator.domain.model.news.TagsModel;
+import ru.pomogator.serverpomogator.domain.model.sertificat.CertificateModel;
+import ru.pomogator.serverpomogator.domain.model.user.User;
 import ru.pomogator.serverpomogator.domain.model.webinar.FavoriteWebinarKey;
 import ru.pomogator.serverpomogator.domain.model.webinar.FavoriteWebinarModel;
+import ru.pomogator.serverpomogator.domain.model.webinar.Status;
 import ru.pomogator.serverpomogator.domain.model.webinar.WebinarModel;
 import ru.pomogator.serverpomogator.exception.BadRequest;
 import ru.pomogator.serverpomogator.exception.InternalServerError;
+import ru.pomogator.serverpomogator.repository.certificate.CertificateRepository;
 import ru.pomogator.serverpomogator.repository.favorite.FavoriteWebinarRepository;
 import ru.pomogator.serverpomogator.repository.news.CategoryRepository;
 import ru.pomogator.serverpomogator.repository.news.NewsRepository;
@@ -28,8 +33,13 @@ import ru.pomogator.serverpomogator.servise.mail.EmailService;
 import ru.pomogator.serverpomogator.utils.FileCreate;
 import ru.pomogator.serverpomogator.utils.FileDelete;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -44,6 +54,7 @@ public class WebinarServise {
     private final WebinarMapper webinarMapper;
     private final SubcribeRepository subcribeRepository;
     private final FavoriteWebinarRepository favoriteWebinarRepository;
+    private final CertificateRepository certificateRepository;
 
     @Autowired
     EmailService emailService;
@@ -57,21 +68,16 @@ public class WebinarServise {
                 path.append("files/webinar/").append(webinar.getId()).append("/");
                 var new_file = FileCreate.addFile(preview_img, path);
                 webinar.setPreview_img(new_file);
-                webinarRepository.save(webinar);
 
-                var subsribe = subcribeRepository.findAll();
+                ZonedDateTime date = ZonedDateTime.ofInstant(req.getDate_translation().toInstant(),
+                        ZoneId.systemDefault());
+                var dateFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy в HH:mm (МСК)").format(date);
+
+                var subscribeUsers = subcribeRepository.findAll();
                 var pathMaterial = "/webinar/" + webinar.getId();
-                var dateString = new StringBuilder();
-                dateString.append(req.getDate_translation().getDayOfMonth())
-                        .append(".").append(req.getDate_translation().getMonthValue())
-                        .append(".").append(req.getDate_translation().getYear()).append(" ")
-                        .append(req.getDate_translation().getHour() + 3).append(":")
-                        .append(req.getDate_translation().getMinute());
 
-                if (!subsribe.isEmpty()) {
-                    for (var item : subsribe) {
-                        emailService.sendMessageWebinar(item.getEmail(), "Вебинар: " + webinar.getTitle(), webinar.getAnnotation(), pathMaterial, String.valueOf(dateString));
-                    }
+                if (!subscribeUsers.isEmpty()) {
+                    emailService.sendMessageWebinar(subscribeUsers, pathMaterial, webinar, dateFormat);
                 }
             } else {
                 HashMap<String, String> errors = new HashMap<>();
@@ -208,7 +214,7 @@ public class WebinarServise {
         }
     }
 
-    public ResponseEntity<?> editWabinar(WebinarRequest req, MultipartFile previewImg) {
+    public ResponseEntity<?> editWebinar(WebinarRequest req, MultipartFile previewImg) {
         try {
             var webinar = webinarRepository.findById(req.getId());
             WebinarModel edit_news;
@@ -253,6 +259,70 @@ public class WebinarServise {
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<?> subscribeWebinar(Long webinarId, List<User> user) {
+        try {
+            var webinar = webinarRepository.findById(webinarId);
+            webinar.ifPresent(webinarModel -> webinarModel.setSubscribers(user));
+            webinar.ifPresent(webinarRepository::save);
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<?> getSubscribeUser(Long webinarId, List<User> user) {
+        try {
+            var webinar = webinarRepository.findByIdAndSubscribersIn(webinarId, user);
+            if (webinar.isPresent()) {
+                return new ResponseEntity<>(true, HttpStatus.OK);
+            }
+            return new ResponseEntity<>(false, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<?> setStatus(Long webinarId) {
+        try {
+            var webinar = webinarRepository.findById(webinarId);
+            webinar.ifPresent(webinarModel -> webinarModel.setStatus(Status.completed));
+            DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+
+            for (var subscribers : webinar.get().getSubscribers()) {
+                var certificate = new CertificateModel();
+                certificate.setTitle(webinar.get().getTitle());
+                certificate.setDate(df.format(new Date()));
+                certificate.setUser(subscribers);
+                certificateRepository.save(certificate);
+            }
+
+            return new ResponseEntity<>(HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Scheduled(fixedDelayString = "PT02H")
+    public void computePrice() throws InterruptedException {
+        var webinar = webinarRepository.findByStatus(Status.create);
+        if (!webinar.isEmpty()) {
+            var currentDate = new Date();
+            for (var item : webinar) {
+                if (item.getDate_translation().getTime() - currentDate.getTime() <= 1000 * 60 * 60 * 2) {
+                    var subscriberUsers = item.getSubscribers();
+                    if (!subscriberUsers.isEmpty()) {
+                        ZonedDateTime date = ZonedDateTime.ofInstant(item.getDate_translation().toInstant(),
+                                ZoneId.systemDefault());
+                        var dateFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy в HH:mm (МСК)").format(date);
+                        var pathMaterial = "/webinar/" + item.getId();
+                        emailService.sendRemindersWebinar(subscriberUsers, pathMaterial, item, dateFormat);
+                    }
+                }
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.standard.DateTimeFormatterRegistrar;
 import org.springframework.http.CacheControl;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -14,6 +15,7 @@ import java.time.Duration;
 
 @Configuration
 @EnableWebMvc
+@EnableAsync
 class WebConfig implements WebMvcConfigurer {
     @Value("${url-frontend}")
     private String url;

@@ -2,10 +2,8 @@ package ru.pomogator.serverpomogator.domain.mapper;
 
 import org.mapstruct.*;
 import ru.pomogator.serverpomogator.domain.dto.material.MaterialResponse;
-import ru.pomogator.serverpomogator.domain.dto.news.NewsRequest;
 import ru.pomogator.serverpomogator.domain.dto.webinar.WebinarRequest;
 import ru.pomogator.serverpomogator.domain.dto.webinar.WebinarResponse;
-import ru.pomogator.serverpomogator.domain.model.news.NewsModel;
 import ru.pomogator.serverpomogator.domain.model.news.TagsModel;
 import ru.pomogator.serverpomogator.domain.model.webinar.WebinarModel;
 

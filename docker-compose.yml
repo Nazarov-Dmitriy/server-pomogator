@@ -5,7 +5,8 @@ services:
     image: dmitriynazarov/pomogator:1.0.1
     ports:
       - 5500:5500
-
+    volumes:
+      - ./files:/files
 
 
 

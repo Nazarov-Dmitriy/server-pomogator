@@ -1,20 +1,17 @@
 package ru.pomogator.serverpomogator.domain.dto.webinar;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.Value;
-import org.springframework.format.annotation.DateTimeFormat;
+import lombok.Data;
 import ru.pomogator.serverpomogator.domain.model.news.TagsModel;
 import ru.pomogator.serverpomogator.domain.model.user.User;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 
-@Value
+@Data
 public class WebinarRequest {
     Long id;
     @NotBlank(message = "Поле не должно быть пустым")
@@ -26,7 +23,6 @@ public class WebinarRequest {
     @NotEmpty(message = "Поле не должно быть пустым")
     String video;
     @NotNull(message = "Поле не должно быть пустым")
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
-    private LocalDateTime date_translation;
+    Date date_translation;
     User author;
 }

@@ -1,23 +1,26 @@
 package ru.pomogator.serverpomogator.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import ru.pomogator.serverpomogator.domain.dto.subsribe.SubcribeDto;
-import ru.pomogator.serverpomogator.servise.subsribe.SubscribeServise;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import ru.pomogator.serverpomogator.domain.dto.email.FormRequest;
+import ru.pomogator.serverpomogator.servise.mail.EmailService;
 
 @RestController
 @RequestMapping("send-mail")
 @RequiredArgsConstructor
 public class EmailController {
-    private final SubscribeServise subscribeServise;
-
+    private final EmailService emailService;
     @PostMapping("/faq")
-    public ResponseEntity<?> userSubscribe(@RequestBody @Validated SubcribeDto req) {
-        return subscribeServise.subscribe(req);
+    public ResponseEntity<?> sendFaq(@RequestBody @Validated FormRequest req) {
+        return emailService.sendFaq(req);
+    }
+
+    @PostMapping(path ="/material",  consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> sendMaterial(@Validated FormRequest req, @ModelAttribute MultipartFile file) {
+        return emailService.sendOfferMaterial(req, file);
     }
 }

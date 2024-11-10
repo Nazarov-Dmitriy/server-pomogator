@@ -35,6 +35,11 @@ public class NewsController {
         return newsServise.list(category, tags);
     }
 
+    @GetMapping("/list-actial")
+    public ResponseEntity<?> listActual() {
+        return newsServise.listActual();
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> news(@PathVariable Long id, @RequestParam(required = false) Long user_id) {
         return newsServise.get(id, user_id);

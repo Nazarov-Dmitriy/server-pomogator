@@ -26,6 +26,7 @@ public class NewsModel extends BaseEntity {
     @Column(name = "title", nullable = false)
     private String title;
 
+    @Lob
     @Column(name = "annotation", nullable = false)
     private String annotation;
 
@@ -59,7 +60,7 @@ public class NewsModel extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     private User author;
 
-    @OneToMany(mappedBy = "news" ,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "news", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     List<FavoriteModel> favorite;
 }
 

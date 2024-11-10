@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import ru.pomogator.serverpomogator.domain.dto.news.NewsResponse;
+import ru.pomogator.serverpomogator.domain.model.webinar.Status;
 import ru.pomogator.serverpomogator.domain.model.webinar.WebinarModel;
 
 import java.io.Serializable;
@@ -28,13 +29,13 @@ public class WebinarResponse implements Serializable {
     private int likes;
     private List<Long> tags;
     private String video;
-    @JsonFormat(pattern = "dd.MM.yyyy HH:mm")
     private Date date_translation;
     private String preview_img;
     private NewsResponse.UserDto author;
+    private Status status;
     @JsonFormat(pattern = "dd.MM.yyyy")
     private LocalDateTime createdAt;
     @JsonFormat(pattern = "dd.MM.yyyy")
     private LocalDateTime updatedAt;
-    private String type="webinar";
+    private String type = "webinar";
 }

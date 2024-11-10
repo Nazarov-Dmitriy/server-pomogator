@@ -28,6 +28,7 @@ public class WebinarModel extends BaseEntity {
     @Column(name = "title", nullable = false)
     private String title;
 
+    @Lob
     @Column(name = "annotation", nullable = false)
     private String annotation;
 
@@ -37,7 +38,7 @@ public class WebinarModel extends BaseEntity {
     @Column(name = "likes", nullable = false)
     private int likes;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<TagsModel> tags;
 
     @Column(name = "video")
@@ -46,16 +47,27 @@ public class WebinarModel extends BaseEntity {
     @Column(name = "date_translation")
     private Date date_translation;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private Status status;
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private FileModel preview_img;
 
     @ManyToOne(fetch = FetchType.EAGER)
     private User author;
 
-//    @OneToMany(mappedBy = "news", fetch = FetchType.LAZY)
-//    List<FavoriteModel> favorite;
-//
-//    @OneToMany(mappedBy = "news", fetch = FetchType.LAZY)
-//    List<FavoriteModel> favorite;
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<User> subscribers;
+
+    @OneToMany(mappedBy = "webinar", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    List<FavoriteWebinarModel> favorite;
+
+    @PrePersist
+    public void prePersist() {
+        if (status == null) {
+            status = Status.create;
+        }
+    }
 }
 

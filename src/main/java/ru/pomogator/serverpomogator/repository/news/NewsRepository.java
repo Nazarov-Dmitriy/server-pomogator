@@ -15,6 +15,8 @@ public interface NewsRepository extends JpaRepository<NewsModel, Long> {
 
     List<NewsModel> findByAuthorId(Long id);
 
+    List<NewsModel> findTop3ByOrderByCreatedAtDesc();
+
     List<NewsModel> findByAuthorIdAndTagsIn(Long id, List<String> tags);
 
     void deleteById(Long id);

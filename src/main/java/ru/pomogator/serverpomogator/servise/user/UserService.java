@@ -25,10 +25,7 @@ import ru.pomogator.serverpomogator.utils.FileCreate;
 import ru.pomogator.serverpomogator.utils.FileDelete;
 import ru.pomogator.serverpomogator.utils.HeaderToken;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @Service
@@ -111,6 +108,7 @@ public class UserService {
         if (user.isPresent()) {
             var path = new StringBuilder();
             path.append("files/user/").append(user.get().getId()).append("/");
+            FileDelete.deleteFile(String.valueOf(path));
             var file = FileCreate.addFile(req.getAvatar(), path);
             user.get().setAvatar(file);
             repository.save(user.get());

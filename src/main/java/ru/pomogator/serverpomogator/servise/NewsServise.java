@@ -45,6 +45,7 @@ public class NewsServise {
     @Autowired
     EmailService emailService;
 
+    @Transactional
     public ResponseEntity<Void> addNews(NewsRequest req, MultipartFile file) {
         try {
             if (req.getVideo().isEmpty() && file == null) {
@@ -57,19 +58,14 @@ public class NewsServise {
                 var path = new StringBuilder();
                 path.append("files/news/").append(news.getId()).append("/");
                 var new_file = FileCreate.addFile(file, path);
-                System.out.println(new_file);
                 news.setFile(new_file);
                 newsRepository.save(news);
-                System.out.println(news);
             }
-            var subsribe = subcribeRepository.findAll();
+            var subsribeUsers = subcribeRepository.findAll();
             var pathMaterial = "/blog/article/" + news.getId();
-            if (!subsribe.isEmpty()) {
-                for (var item : subsribe) {
-                    emailService.sendMessageMaterial(item.getEmail(), news.getTitle(), news.getAnnotation(), pathMaterial);
-                }
+            if (!subsribeUsers.isEmpty()) {
+                    emailService.sendMessageMaterial(subsribeUsers, pathMaterial, news);
             }
-
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EmptyResultDataAccessException e) {
             throw new BadRequest("Error input data");
@@ -211,7 +207,6 @@ public class NewsServise {
             return new ResponseEntity<>(HttpStatus.OK);
 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -272,6 +267,22 @@ public class NewsServise {
             return new ResponseEntity<>(list, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<?> listActual() {
+        try {
+            var list = new ArrayList<NewsResponse>();
+            var news = newsRepository.findTop3ByOrderByCreatedAtDesc();
+
+            if (!news.isEmpty()) {
+                for (var item : news) {
+                    list.add(newsMapper.toNewsResponse(item));
+                }
+            }
+            return new ResponseEntity<>(list, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 }
