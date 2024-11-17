@@ -3,6 +3,7 @@ package ru.pomogator.serverpomogator.domain.model.file;
 import jakarta.persistence.*;
 import lombok.*;
 import ru.pomogator.serverpomogator.domain.model.news.NewsModel;
+import ru.pomogator.serverpomogator.domain.model.reviews.ReviewsModel;
 import ru.pomogator.serverpomogator.domain.model.user.User;
 import ru.pomogator.serverpomogator.domain.model.webinar.WebinarModel;
 
@@ -34,6 +35,9 @@ public class FileModel {
 
     @OneToOne( mappedBy = "preview_img")
     private WebinarModel webinar;
+
+    @OneToOne( mappedBy = "file")
+    private ReviewsModel reviews;
 
     @OneToOne( mappedBy = "avatar" , fetch = FetchType.LAZY)
     @JoinColumn(name = "avatar_id", referencedColumnName = "id")

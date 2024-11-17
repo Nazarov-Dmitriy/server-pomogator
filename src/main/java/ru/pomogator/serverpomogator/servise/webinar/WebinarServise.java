@@ -87,7 +87,9 @@ public class WebinarServise {
 
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EmptyResultDataAccessException e) {
-            throw new BadRequest("Error input data");
+            HashMap<String, String> errors = new HashMap<>();
+            errors.put("error", "ошибка данных");
+            throw new BadRequest("error", errors);
         }
     }
 
@@ -122,7 +124,9 @@ public class WebinarServise {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
-            throw new BadRequest("Error input data");
+            HashMap<String, String> errors = new HashMap<>();
+            errors.put("error", "ошибка данных");
+            throw new BadRequest("error", errors);
         }
     }
 

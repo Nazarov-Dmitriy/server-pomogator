@@ -45,11 +45,12 @@ public class SecurityConfiguration {
                         request.requestMatchers("/auth/**", "/files/**", "/images/**", "/certificate/**","/subscribe/**", "/send-mail/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/news/**","/webinar/**" )
                                 .permitAll()
-                                .requestMatchers(HttpMethod.POST,"/send-mail/**")
+                                .requestMatchers(HttpMethod.POST,"/send-mail/**" ,"/auth/**", "/user/for-got-password")
                                 .permitAll()
                                 .requestMatchers(HttpMethod.POST, "/news/**","/webinar/**")
                                 .authenticated().requestMatchers(HttpMethod.PUT, "/news/**","/webinar/**").authenticated()
-                                .requestMatchers("/endpoint", "/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/endpoint", "/admin/**").permitAll()
+//                                .requestMatchers("/endpoint", "/admin/**").hasRole("ADMIN")
                                 .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider())
@@ -91,6 +92,4 @@ public class SecurityConfiguration {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-
-
 }

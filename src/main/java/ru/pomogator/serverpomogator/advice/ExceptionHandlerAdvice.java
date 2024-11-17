@@ -37,7 +37,7 @@ public class ExceptionHandlerAdvice {
 
     @ExceptionHandler(BadRequest.class)
     public ResponseEntity<?> badRequest(BadRequest exception, HttpServletRequest req) {
-        UUID id = UUID.randomUUID();
+         UUID id = UUID.randomUUID();
         if(!exception.getErrors().isEmpty()) {
             return new ResponseEntity<>(exception.getErrors(), HttpStatus.BAD_REQUEST);
         }
@@ -54,18 +54,13 @@ public class ExceptionHandlerAdvice {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
         }
 
-        if (exception.getMessage().equals("Пользователь с таким email уже существует")) {
-            Map<String, String> errors = new HashMap<>();
-            errors.put("email", "Пользователь с таким email уже существует");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
-        }
-
         ErrorMessage errorMessage = new ErrorMessage(id, exception.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
     }
 
     @ExceptionHandler(Unauthorized.class)
     public ResponseEntity<ErrorMessage> unauthorized(Unauthorized exception, HttpServletRequest req) {
+
         UUID id = UUID.randomUUID();
         ErrorMessage errorMessage = new ErrorMessage(id, exception.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorMessage);

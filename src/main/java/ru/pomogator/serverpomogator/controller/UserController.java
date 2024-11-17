@@ -1,6 +1,7 @@
 package ru.pomogator.serverpomogator.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -25,6 +26,11 @@ public class UserController {
     @PostMapping("/change-password")
     public ResponseEntity<Void> changePassword(@RequestBody @Validated(UserRequest.UserChangePassword.class) UserRequest req, HttpServletRequest request) {
         return userService.changePassword(req, request);
+    }
+
+    @PostMapping("/for-got-password")
+    public ResponseEntity<Void> forGotPassword(@RequestBody @Validated(UserRequest.ForGotPassword.class)  UserRequest req, HttpServletRequest request) {
+        return userService.forGotPassword(req, request);
     }
 
     @PostMapping("/avatar/add")

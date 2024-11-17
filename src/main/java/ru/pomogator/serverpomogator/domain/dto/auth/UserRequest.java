@@ -14,9 +14,9 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserRequest {
-    @Size(min = 1, max = 255, message = "Адрес электронной почты должен содержать от 5 до 255 символов", groups = {SignIn.class, SignUpOne.class, UserInfo.class})
-    @NotBlank(message = "Поле не должно быть пустым")
-    @Email(message = "Email адрес должен быть в формате user@example.ru")
+    @Size(min = 5, max = 255, message = "Адрес электронной почты должен содержать от 5 до 255 символов", groups = {SignIn.class, SignUpOne.class, UserInfo.class, ForGotPassword.class})
+    @NotBlank(message = "Поле не должно быть пустым", groups = {SignIn.class, SignUpOne.class, UserInfo.class, ForGotPassword.class})
+    @Email(message = "Email адрес должен быть в формате user@example.ru", groups = {SignIn.class, SignUpOne.class, UserInfo.class, ForGotPassword.class})
     private String email;
 
     @Size(min = 8, max = 255, message = "Длина пароля должна быть от 8", groups = {SignIn.class, SignUpOne.class, UserChangePassword.class})
@@ -24,7 +24,7 @@ public class UserRequest {
     private String password;
 
     @Size(min = 8, max = 255, message = "Длина пароля должна быть от 8", groups = {UserChangePassword.class})
-    @NotBlank(message = "Поле не должно быть пустым")
+    @NotBlank(message = "Поле не должно быть пустым", groups = {UserChangePassword.class})
     private String new_password;
 
     private Role role;
@@ -60,33 +60,39 @@ public class UserRequest {
     private MultipartFile avatar;
 
     /**
-     * группа проверок для авторизации
+     * Группа проверок для авторизации
      */
     public interface SignIn {
     }
 
     /**
-     * группа проверок для регистрации
+     * Группа проверок для регистрации
      */
     public interface SignUpOne {
     }
 
     /**
-     * группа проверок для регистрации информации о пользователи
+     * Группа проверок для регистрации информации о пользователи
      */
     public interface UserInfo {
     }
 
     /**
-     * группа проверок для регистрации информации о пользователи
+     * Группа проверок для аватара пользователя
      */
     public interface UserAvatar {
     }
 
     /**
-     * группа проверок для регистрации информации о пользователи
+     * Группа проверок для смены пароля
      */
     public interface UserChangePassword {
+    }
+
+    /**
+     * Группа проверок для восстановления пароля
+     */
+    public interface ForGotPassword {
     }
 }
 

@@ -68,7 +68,9 @@ public class NewsServise {
             }
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EmptyResultDataAccessException e) {
-            throw new BadRequest("Error input data");
+            HashMap<String, String> errors = new HashMap<>();
+            errors.put("error", "ошибка данных");
+            throw new BadRequest("error", errors);
         }
     }
 
@@ -109,8 +111,9 @@ public class NewsServise {
 
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EmptyResultDataAccessException e) {
-            throw new InternalServerError("Error input data");
-        }
+            HashMap<String, String> errors = new HashMap<>();
+            errors.put("error", "ошибка данных");
+            throw new BadRequest("error", errors);        }
     }
 
     @Transactional
@@ -123,8 +126,9 @@ public class NewsServise {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
-            throw new BadRequest("Error input data");
-        }
+            HashMap<String, String> errors = new HashMap<>();
+            errors.put("error", "ошибка данных");
+            throw new BadRequest("error", errors);        }
     }
 
     public ResponseEntity<?> list(Long category, List<String> tags) {
@@ -155,16 +159,18 @@ public class NewsServise {
         try {
             return new ResponseEntity<>(tagsRepository.findAll(), HttpStatus.OK);
         } catch (Exception e) {
-            throw new BadRequest("Error input data");
-        }
+            HashMap<String, String> errors = new HashMap<>();
+            errors.put("error", "ошибка данных");
+            throw new BadRequest("error", errors);        }
     }
 
     public ResponseEntity<?> getCategory() {
         try {
             return new ResponseEntity<>(categoryRepository.findAll(), HttpStatus.OK);
         } catch (Exception e) {
-            throw new BadRequest("Error input data");
-        }
+            HashMap<String, String> errors = new HashMap<>();
+            errors.put("error", "ошибка данных");
+            throw new BadRequest("error", errors);        }
     }
 
     public ResponseEntity<?> setShow(Long id) {

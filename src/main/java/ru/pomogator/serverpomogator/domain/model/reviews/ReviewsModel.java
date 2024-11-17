@@ -1,10 +1,11 @@
 package ru.pomogator.serverpomogator.domain.model.reviews;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 import ru.pomogator.serverpomogator.domain.model.base.BaseEntity;
-import ru.pomogator.serverpomogator.domain.model.user.User;
+import ru.pomogator.serverpomogator.domain.model.file.FileModel;
+
+import java.time.LocalDate;
 
 @Data
 @Getter
@@ -14,7 +15,7 @@ import ru.pomogator.serverpomogator.domain.model.user.User;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@Table(name = "certificate")
+@Table(name = "reviews")
 public class ReviewsModel extends BaseEntity {
     @Id
     @Column(name = "id")
@@ -22,11 +23,14 @@ public class ReviewsModel extends BaseEntity {
     private Long id;
 
     @Column(name = "date", nullable = false)
-    private String date;
+    private LocalDate date;
 
-    @Column(name = "title", nullable = false)
-    private String title;
+    @Column(name = "description", nullable = false)
+    private String description;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    private User user;
+    @Column(name = "author", nullable = false)
+    private String author;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private FileModel file;
 }

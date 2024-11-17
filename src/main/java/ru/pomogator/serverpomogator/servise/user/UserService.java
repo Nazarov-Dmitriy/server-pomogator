@@ -3,6 +3,7 @@ package ru.pomogator.serverpomogator.servise.user;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.sshd.common.config.keys.loader.openssh.kdf.BCrypt;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,10 +18,12 @@ import ru.pomogator.serverpomogator.domain.model.news.NewsModel;
 import ru.pomogator.serverpomogator.domain.model.user.User;
 import ru.pomogator.serverpomogator.domain.model.webinar.WebinarModel;
 import ru.pomogator.serverpomogator.exception.BadRequest;
+import ru.pomogator.serverpomogator.exception.InternalServerError;
 import ru.pomogator.serverpomogator.repository.news.NewsRepository;
 import ru.pomogator.serverpomogator.repository.user.UserRepository;
 import ru.pomogator.serverpomogator.repository.webinar.WebinarRepository;
 import ru.pomogator.serverpomogator.security.JwtUser;
+import ru.pomogator.serverpomogator.servise.mail.EmailService;
 import ru.pomogator.serverpomogator.utils.FileCreate;
 import ru.pomogator.serverpomogator.utils.FileDelete;
 import ru.pomogator.serverpomogator.utils.HeaderToken;
@@ -39,7 +42,10 @@ public class UserService {
     private final WebinarRepository webinarRepository;
     private final NewsMapper newsMapper;
     private final WebinarMapper webinarMapper;
+    private final UserRepository userRepository;
 
+    @Autowired
+    EmailService emailService;
 
     public User save(User user) {
         return repository.save(user);
@@ -47,7 +53,9 @@ public class UserService {
 
     public User create(User user) {
         if (repository.existsByEmail(user.getEmail())) {
-            throw new BadRequest("Пользователь с таким email уже существует");
+            HashMap<String, String> errors = new HashMap<>();
+            errors.put("email", "Пользователь с таким email уже существует");
+            throw new BadRequest("error", errors);
         }
         return save(user);
     }
@@ -60,7 +68,9 @@ public class UserService {
         String jwt = "";
         if (!request.getEmail().equals(request.getCurrent_email())) {
             if (repository.existsByEmail(request.getEmail())) {
-                throw new BadRequest("Пользователь с таким email уже существует");
+                HashMap<String, String> errors = new HashMap<>();
+                errors.put("email", "Пользователь с таким email уже существует");
+                throw new BadRequest("error", errors);
             }
         }
         Optional<User> user = repository.findByEmail(request.getCurrent_email());
@@ -81,7 +91,9 @@ public class UserService {
                 return new AuthenticationResponse(jwt, responseUser);
             }
         } else {
-            throw new BadRequest("Bad email");
+            HashMap<String, String> errors = new HashMap<>();
+            errors.put("error", "ошибка данных");
+            throw new BadRequest("error", errors);
         }
     }
 
@@ -92,14 +104,18 @@ public class UserService {
 
         if (user.isPresent()) {
             if (!BCrypt.checkpw(req.getPassword(), user.get().getPassword())) {
-                throw new BadRequest("Bad password");
+                HashMap<String, String> errors = new HashMap<>();
+                errors.put("password", "плохой пароль");
+                throw new BadRequest("error", errors);
             } else {
                 user.get().setPassword(passwordEncoder.encode(req.getNew_password()));
                 repository.save(user.get());
                 return new ResponseEntity<>(HttpStatus.OK);
             }
         } else {
-            throw new BadRequest("Bad email");
+            HashMap<String, String> errors = new HashMap<>();
+            errors.put("error", "ошибка данных");
+            throw new BadRequest("error", errors);
         }
     }
 
@@ -164,6 +180,32 @@ public class UserService {
             return new ResponseEntity<>(list, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    public ResponseEntity<Void> forGotPassword(UserRequest req, HttpServletRequest request) {
+        try {
+            String password = new Random().ints(10, 33, 122).collect(StringBuilder::new,
+                            StringBuilder::appendCodePoint, StringBuilder::append)
+                    .toString();
+
+            var passwordHash = passwordEncoder.encode(password);
+            var userGet = userRepository.findByEmail(req.getEmail());
+            if (userGet.isPresent()) {
+                userGet.get().setPassword(passwordHash);
+                userRepository.save(userGet.get());
+
+                if (passwordHash.equals(userGet.get().getPassword())) {
+                    emailService.sendForGotPassword(password, req.getEmail());
+                } else {
+                    throw new InternalServerError("Ошибка смены пароля");
+                }
+            }
+
+            return new ResponseEntity<>(HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

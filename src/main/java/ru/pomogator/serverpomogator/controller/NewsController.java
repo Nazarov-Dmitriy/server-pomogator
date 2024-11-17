@@ -1,5 +1,6 @@
 package ru.pomogator.serverpomogator.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -12,6 +13,7 @@ import ru.pomogator.serverpomogator.servise.NewsServise;
 import java.util.List;
 
 @RestController
+@Slf4j
 @RequestMapping("news")
 public class NewsController {
     private final NewsServise newsServise;
@@ -37,6 +39,7 @@ public class NewsController {
 
     @GetMapping("/list-actial")
     public ResponseEntity<?> listActual() {
+        log.info("list-actial");
         return newsServise.listActual();
     }
 

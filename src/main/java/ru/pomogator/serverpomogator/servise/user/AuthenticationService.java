@@ -19,6 +19,7 @@ import ru.pomogator.serverpomogator.security.CustomerUserDetailsService;
 import ru.pomogator.serverpomogator.security.JwtUser;
 import ru.pomogator.serverpomogator.servise.mail.EmailService;
 
+import java.util.HashMap;
 import java.util.Optional;
 
 @Service
@@ -36,6 +37,7 @@ public class AuthenticationService {
     EmailService emailService;
 
     public AuthenticationResponse signUp(UserRequest request) {
+
         var user = User.builder().email(request.getEmail()).password(passwordEncoder.encode(request.getPassword())).role(Role.ROLE_USER).build();
         userService.create(user);
         var jwtUser = new JwtUser(user);
@@ -47,7 +49,9 @@ public class AuthenticationService {
     public AuthenticationResponse signIn(UserRequest request) throws BadRequest {
         var user = customerUserDetailsService.loadUserByUsername(request.getEmail());
         if (!BCrypt.checkpw(request.getPassword(), user.getPassword())) {
-            throw new BadRequest("Bad password");
+            HashMap<String, String> errors = new HashMap<>();
+            errors.put("password", "не правильный пароль");
+            throw new BadRequest("error", errors);
         }
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         var jwt = jwtService.generateToken(user);
@@ -67,7 +71,9 @@ public class AuthenticationService {
             userRepository.save(user.get());
             return userMapper.toUserResponse(user.get());
         } else {
-            throw new BadRequest("Bad email");
+            HashMap<String, String> errors = new HashMap<>();
+            errors.put("error", "ошибка данных");
+            throw new BadRequest("error", errors);
         }
     }
 

@@ -164,7 +164,9 @@ public class EmailService {
             sendSimpleEmail(params, null);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            throw new BadRequest("Error input data");
+            HashMap<String, String> errors = new HashMap<>();
+            errors.put("error", "ошибка данных");
+            throw new BadRequest("error", errors);
         }
     }
 
@@ -181,9 +183,25 @@ public class EmailService {
             sendSimpleEmail(params, file);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            throw new BadRequest("Error input data");
+            HashMap<String, String> errors = new HashMap<>();
+            errors.put("error", "ошибка данных");
+            throw new BadRequest("error", errors);
         }
     }
 
-
+    public ResponseEntity<Object> sendForGotPassword(String password, String email) {
+        try {
+            Map<String, String> params = new HashMap<>();
+            params.put("email", email);
+            params.put("subject", "Восстановление пароля");
+            params.put("password",password);
+            params.put("template", "for-got-password.ftlh");
+            sendSimpleEmail(params, null);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            HashMap<String, String> errors = new HashMap<>();
+            errors.put("error", "ошибка данных");
+            throw new BadRequest("error", errors);
+        }
+    }
 }
