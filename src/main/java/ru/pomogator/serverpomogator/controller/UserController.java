@@ -29,8 +29,8 @@ public class UserController {
     }
 
     @PostMapping("/for-got-password")
-    public ResponseEntity<Void> forGotPassword(@RequestBody @Validated(UserRequest.ForGotPassword.class)  UserRequest req, HttpServletRequest request) {
-        return userService.forGotPassword(req, request);
+    public ResponseEntity<Void> forGotPassword(@RequestBody @Validated(UserRequest.ForGotPassword.class)  UserRequest req) {
+        return userService.forGotPassword(req);
     }
 
     @PostMapping("/avatar/add")

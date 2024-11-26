@@ -189,7 +189,7 @@ public class EmailService {
         }
     }
 
-    public ResponseEntity<Object> sendForGotPassword(String password, String email) {
+    public void sendForGotPassword(String password, String email) {
         try {
             Map<String, String> params = new HashMap<>();
             params.put("email", email);
@@ -197,7 +197,7 @@ public class EmailService {
             params.put("password",password);
             params.put("template", "for-got-password.ftlh");
             sendSimpleEmail(params, null);
-            return ResponseEntity.ok().build();
+            ResponseEntity.ok().build();
         } catch (Exception e) {
             HashMap<String, String> errors = new HashMap<>();
             errors.put("error", "ошибка данных");

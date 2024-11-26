@@ -57,11 +57,11 @@ public class WebinarModel extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     private User author;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    private List<User> subscribers;
-
     @OneToMany(mappedBy = "webinar", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     List<FavoriteWebinarModel> favorite;
+
+    @OneToMany( fetch = FetchType.EAGER)
+    private List<User> subscribers;
 
     @PrePersist
     public void prePersist() {

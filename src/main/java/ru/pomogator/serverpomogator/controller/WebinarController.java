@@ -79,7 +79,7 @@ public class WebinarController {
     }
 
     @GetMapping("/subscribe")
-    public ResponseEntity<?> subscribeWebinar(@RequestParam Long webinar_id, @RequestParam List<User> user) {
+    public ResponseEntity<?> subscribeWebinar(@RequestParam Long webinar_id, @RequestParam User user) {
         return webinarServise.subscribeWebinar(webinar_id, user);
     }
 

@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.pomogator.serverpomogator.domain.dto.auth.AuthenticationResponse;
 import ru.pomogator.serverpomogator.domain.dto.auth.UserRequest;
+import ru.pomogator.serverpomogator.domain.dto.auth.UserResponse;
 import ru.pomogator.serverpomogator.domain.dto.material.MaterialResponse;
 import ru.pomogator.serverpomogator.domain.mapper.NewsMapper;
 import ru.pomogator.serverpomogator.domain.mapper.UserMapper;
@@ -128,6 +129,7 @@ public class UserService {
             var file = FileCreate.addFile(req.getAvatar(), path);
             user.get().setAvatar(file);
             repository.save(user.get());
+            assert file != null;
             return new ResponseEntity<>(file.getPath(), HttpStatus.OK);
         }
         return null;
@@ -183,7 +185,7 @@ public class UserService {
         }
     }
 
-    public ResponseEntity<Void> forGotPassword(UserRequest req, HttpServletRequest request) {
+    public ResponseEntity<Void> forGotPassword(UserRequest req) {
         try {
             String password = new Random().ints(10, 33, 122).collect(StringBuilder::new,
                             StringBuilder::appendCodePoint, StringBuilder::append)
@@ -205,6 +207,95 @@ public class UserService {
             return new ResponseEntity<>(HttpStatus.OK);
 
         } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<?> getUserList() {
+        var list = new ArrayList<UserResponse>();
+        var users = repository.findAll();
+        if (!users.isEmpty()) {
+            for (var item : users) {
+                list.add(userMapper.toUserList(item));
+            }
+        }
+        return new ResponseEntity<>(list, HttpStatus.OK);
+
+    }
+
+    public ResponseEntity<?> setUserRole(UserRequest body) {
+        try {
+            var user = repository.findById(body.getUser_id());
+            user.ifPresent(value -> value.setRole(body.getRole()));
+            user.ifPresent(repository::save);
+            return new ResponseEntity<>(HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<?> removeUser(Long id) {
+        try {
+            var user = repository.findById(id);
+            var news = newsRepository.findByAuthorId(id);
+            var webinar = webinarRepository.findByAuthorId(id);
+            var webinar_subscribers = webinarRepository.findBySubscribers(user.get());
+            if (!news.isEmpty()) {
+                for (var item : news) {
+                    newsRepository.delete(item);
+                    var pathFile = (item.getFile().getPath().split("/"));
+                    var directoryPath = pathFile[0] + "/" + pathFile[1] + "/" + pathFile[2];
+                    FileDelete.deleteFile(directoryPath, true);
+                }
+
+            }
+            if (!webinar.isEmpty()) {
+                for (var item : webinar) {
+                    webinarRepository.delete(item);
+                    var pathFile = (item.getPreview_img().getPath().split("/"));
+                    var directoryPath = pathFile[0] + "/" + pathFile[1] + "/" + pathFile[2];
+                    FileDelete.deleteFile(directoryPath, true);
+                }
+            }
+            if(!webinar_subscribers.isEmpty()) {
+                for (var item : webinar_subscribers) {
+                    List<User> list = new ArrayList<>(item.getSubscribers());
+//                    List<User> aaa = new ArrayList<>(item.getSubscribers());
+                    List<User> new_list = new ArrayList<>(item.getSubscribers());
+//                    while (item.getSubscribers().listIterator().hasNext()) {
+//
+//                        System.out.println(item.getSubscribers().listIterator().next().getName());
+//                        item.getSubscribers().listIterator().next();
+//                    }
+//                    for (var sub : list) {
+//                        System.out.println(sub.getName());
+//                        System.out.println( sub.getSurname());
+//                        System.out.println( Objects.equals(sub.getId(), id));
+//                        System.out.printf(String.valueOf(sub.getId()), id);
+//                        if(Objects.equals(sub.getId(), id)) {
+////                            new_list.add(sub);
+////                            System.out.println(list.size());
+//                            item.getSubscribers().
+//
+//
+//                        }
+//                    }
+                    System.out.println(33333333);
+//                    System.out.println(list.size());
+//                    item.setSubscribers(null);
+//                    webinarRepository.save(item);
+//                    item.setSubscribers(new_list);
+                    webinarRepository.save(item);
+
+                }
+            }
+            user.ifPresent(repository::delete);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println("e");
+            System.out.println(e);
+            System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

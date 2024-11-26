@@ -3,7 +3,7 @@ package ru.pomogator.serverpomogator.utils;
 import java.io.File;
 
 public class FolderCreate {
-    private static String[] listFolder = {"files", "files/news", "files/user", "files/document", "files/webinar",  "files/reviews"};
+    private final static String[] listFolder = {"files", "files/news", "files/user", "files/document", "files/webinar",  "files/reviews"};
 
     static public void createFolder(String folderPath) {
         File directory = new File(folderPath);

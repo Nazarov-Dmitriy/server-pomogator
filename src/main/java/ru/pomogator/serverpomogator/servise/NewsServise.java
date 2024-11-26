@@ -16,7 +16,6 @@ import ru.pomogator.serverpomogator.domain.model.news.FavoriteModel;
 import ru.pomogator.serverpomogator.domain.model.news.NewsModel;
 import ru.pomogator.serverpomogator.domain.model.news.TagsModel;
 import ru.pomogator.serverpomogator.exception.BadRequest;
-import ru.pomogator.serverpomogator.exception.InternalServerError;
 import ru.pomogator.serverpomogator.repository.favorite.FavoriteNewsRepository;
 import ru.pomogator.serverpomogator.repository.news.CategoryRepository;
 import ru.pomogator.serverpomogator.repository.news.NewsRepository;
@@ -64,7 +63,7 @@ public class NewsServise {
             var subsribeUsers = subcribeRepository.findAll();
             var pathMaterial = "/blog/article/" + news.getId();
             if (!subsribeUsers.isEmpty()) {
-                    emailService.sendMessageMaterial(subsribeUsers, pathMaterial, news);
+                emailService.sendMessageMaterial(subsribeUsers, pathMaterial, news);
             }
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EmptyResultDataAccessException e) {
@@ -113,7 +112,8 @@ public class NewsServise {
         } catch (EmptyResultDataAccessException e) {
             HashMap<String, String> errors = new HashMap<>();
             errors.put("error", "ошибка данных");
-            throw new BadRequest("error", errors);        }
+            throw new BadRequest("error", errors);
+        }
     }
 
     @Transactional
@@ -128,7 +128,8 @@ public class NewsServise {
         } catch (Exception e) {
             HashMap<String, String> errors = new HashMap<>();
             errors.put("error", "ошибка данных");
-            throw new BadRequest("error", errors);        }
+            throw new BadRequest("error", errors);
+        }
     }
 
     public ResponseEntity<?> list(Long category, List<String> tags) {
@@ -161,7 +162,8 @@ public class NewsServise {
         } catch (Exception e) {
             HashMap<String, String> errors = new HashMap<>();
             errors.put("error", "ошибка данных");
-            throw new BadRequest("error", errors);        }
+            throw new BadRequest("error", errors);
+        }
     }
 
     public ResponseEntity<?> getCategory() {
@@ -170,7 +172,8 @@ public class NewsServise {
         } catch (Exception e) {
             HashMap<String, String> errors = new HashMap<>();
             errors.put("error", "ошибка данных");
-            throw new BadRequest("error", errors);        }
+            throw new BadRequest("error", errors);
+        }
     }
 
     public ResponseEntity<?> setShow(Long id) {

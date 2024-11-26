@@ -39,7 +39,7 @@ public class FileModel {
     @OneToOne( mappedBy = "file")
     private ReviewsModel reviews;
 
-    @OneToOne( mappedBy = "avatar" , fetch = FetchType.LAZY)
+    @OneToOne( mappedBy = "avatar")
     @JoinColumn(name = "avatar_id", referencedColumnName = "id")
     private User user;
 }

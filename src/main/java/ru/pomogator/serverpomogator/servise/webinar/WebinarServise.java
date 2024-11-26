@@ -261,18 +261,25 @@ public class WebinarServise {
             return new ResponseEntity<>(HttpStatus.OK);
 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    public ResponseEntity<?> subscribeWebinar(Long webinarId, List<User> user) {
+    public ResponseEntity<?> subscribeWebinar(Long webinarId, User user) {
         try {
             var webinar = webinarRepository.findById(webinarId);
-            webinar.ifPresent(webinarModel -> webinarModel.setSubscribers(user));
-            webinar.ifPresent(webinarRepository::save);
-            return new ResponseEntity<>(true, HttpStatus.OK);
+            if (webinar.isPresent()) {
+                ArrayList<User> list = new ArrayList<>(webinar.get().getSubscribers());
+                list.add(user);
+                webinar.ifPresent(webinarModel -> webinarModel.setSubscribers(list));
+                webinar.ifPresent(webinarRepository::save);
+                return new ResponseEntity<>(true, HttpStatus.OK);
+
+            } else {
+                return new ResponseEntity<>(false, HttpStatus.OK);
+            }
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -311,12 +318,13 @@ public class WebinarServise {
     }
 
     @Scheduled(fixedDelayString = "PT02H")
-    public void computePrice() throws InterruptedException {
+    public void computePrice() {
         var webinar = webinarRepository.findByStatus(Status.create);
         if (!webinar.isEmpty()) {
             var currentDate = new Date();
             for (var item : webinar) {
-                if (item.getDate_translation().getTime() - currentDate.getTime() <= 1000 * 60 * 60 * 2) {
+                var differenceTime = item.getDate_translation().getTime() - currentDate.getTime();
+                if (differenceTime <= 7_200_200 && differenceTime >= 0) {
                     var subscriberUsers = item.getSubscribers();
                     if (!subscriberUsers.isEmpty()) {
                         ZonedDateTime date = ZonedDateTime.ofInstant(item.getDate_translation().toInstant(),

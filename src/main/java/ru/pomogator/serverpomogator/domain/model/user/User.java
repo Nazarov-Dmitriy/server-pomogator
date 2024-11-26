@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import ru.pomogator.serverpomogator.domain.model.file.FileModel;
 import ru.pomogator.serverpomogator.domain.model.news.FavoriteModel;
+import ru.pomogator.serverpomogator.domain.model.news.NewsModel;
 import ru.pomogator.serverpomogator.domain.model.webinar.FavoriteWebinarModel;
 
 import java.util.Date;
@@ -64,10 +65,13 @@ public class User {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private FileModel avatar;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL, orphanRemoval = true)
+    private NewsModel news;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER,  orphanRemoval = true)
     Set<FavoriteModel> favorite;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true)
     Set<FavoriteWebinarModel> favorite_webinar;
 
     @PrePersist

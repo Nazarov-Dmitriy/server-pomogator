@@ -27,6 +27,7 @@ public class UserRequest {
     @NotBlank(message = "Поле не должно быть пустым", groups = {UserChangePassword.class})
     private String new_password;
 
+    @NotNull(message = "Поле не должно быть пустым", groups = {ChangeRole.class})
     private Role role;
 
     @NotEmpty(message = "Поле не должно быть пустым", groups = {UserInfo.class})
@@ -55,6 +56,9 @@ public class UserRequest {
     private Boolean completed_profile;
 
     private String current_email;
+
+    @NotNull(message = "Поле не должно быть пустым", groups = {ChangeRole.class})
+    private Long user_id;
 
     @NotNull(groups = {UserAvatar.class})
     private MultipartFile avatar;
@@ -93,6 +97,12 @@ public class UserRequest {
      * Группа проверок для восстановления пароля
      */
     public interface ForGotPassword {
+    }
+
+    /**
+     * Группа проверок для восстановления пароля
+     */
+    public interface ChangeRole {
     }
 }
 

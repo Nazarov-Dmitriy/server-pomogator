@@ -21,9 +21,12 @@ public interface WebinarRepository extends JpaRepository<WebinarModel, Long> {
 
     List<WebinarModel> findByTagsIn(List<String> tags);
 
+    List<WebinarModel> findBySubscribers(User user);
+
     Optional<WebinarModel> findByIdAndSubscribersIn(Long id , List<User> user);
 
     List<WebinarModel> findByStatus(Status status);
+
 }
 
 

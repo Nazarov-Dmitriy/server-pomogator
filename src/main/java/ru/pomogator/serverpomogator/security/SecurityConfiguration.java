@@ -34,8 +34,6 @@ import static org.springframework.security.web.header.writers.ClearSiteDataHeade
 public class SecurityConfiguration {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomerUserDetailsService customerUserDetailsService;
-    private static final ClearSiteDataHeaderWriter.Directive[] SOURCE =
-            {CACHE, COOKIES, STORAGE, EXECUTION_CONTEXTS};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -43,14 +41,14 @@ public class SecurityConfiguration {
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(request ->
                         request.requestMatchers("/auth/**", "/files/**", "/images/**", "/certificate/**","/subscribe/**", "/send-mail/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/news/**","/webinar/**" )
+                                .requestMatchers(HttpMethod.GET, "/news/**","/webinar/**", "/admin/reviews/list" )
                                 .permitAll()
                                 .requestMatchers(HttpMethod.POST,"/send-mail/**" ,"/auth/**", "/user/for-got-password")
                                 .permitAll()
                                 .requestMatchers(HttpMethod.POST, "/news/**","/webinar/**")
                                 .authenticated().requestMatchers(HttpMethod.PUT, "/news/**","/webinar/**").authenticated()
-                                .requestMatchers("/endpoint", "/admin/**").permitAll()
-//                                .requestMatchers("/endpoint", "/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/reviews/**").hasAnyRole("ADMIN", "MODERATOR")
+                                .requestMatchers("/endpoint", "/admin/**").hasRole("ADMIN")
                                 .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider())

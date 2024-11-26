@@ -59,7 +59,7 @@ public class ExceptionHandlerAdvice {
     }
 
     @ExceptionHandler(Unauthorized.class)
-    public ResponseEntity<ErrorMessage> unauthorized(Unauthorized exception, HttpServletRequest req) {
+    public ResponseEntity<ErrorMessage> unauthorized(Unauthorized exception) {
 
         UUID id = UUID.randomUUID();
         ErrorMessage errorMessage = new ErrorMessage(id, exception.getMessage());
