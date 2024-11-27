@@ -1,20 +1,16 @@
 package ru.pomogator.serverpomogator.controller;
 
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.pomogator.serverpomogator.domain.dto.news.NewsRequest;
 import ru.pomogator.serverpomogator.domain.dto.webinar.WebinarRequest;
 import ru.pomogator.serverpomogator.domain.model.news.TagsModel;
 import ru.pomogator.serverpomogator.domain.model.user.User;
-import ru.pomogator.serverpomogator.servise.NewsServise;
 import ru.pomogator.serverpomogator.servise.webinar.WebinarServise;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -84,12 +80,12 @@ public class WebinarController {
     }
 
     @GetMapping("/get-subscribe")
-    public ResponseEntity<?> getSubscribeUser(@RequestParam Long webinar_id, @RequestParam List<User> user) {
+    public ResponseEntity<?> getSubscribeUser(@RequestParam Long webinar_id, @RequestParam Long user) {
         return webinarServise.getSubscribeUser(webinar_id, user);
     }
 
     @GetMapping("/set-status")
     public ResponseEntity<?> setStatus(@RequestParam Long webinar_id) {
-                return webinarServise.setStatus(webinar_id);
+        return webinarServise.setStatus(webinar_id);
     }
 }

@@ -23,6 +23,7 @@ import ru.pomogator.serverpomogator.exception.InternalServerError;
 import ru.pomogator.serverpomogator.repository.news.NewsRepository;
 import ru.pomogator.serverpomogator.repository.user.UserRepository;
 import ru.pomogator.serverpomogator.repository.webinar.WebinarRepository;
+import ru.pomogator.serverpomogator.repository.webinar.WebinarSubscribeRepository;
 import ru.pomogator.serverpomogator.security.JwtUser;
 import ru.pomogator.serverpomogator.servise.mail.EmailService;
 import ru.pomogator.serverpomogator.utils.FileCreate;
@@ -44,6 +45,7 @@ public class UserService {
     private final NewsMapper newsMapper;
     private final WebinarMapper webinarMapper;
     private final UserRepository userRepository;
+    private final WebinarSubscribeRepository webinarSubscribeRepository;
 
     @Autowired
     EmailService emailService;
@@ -240,7 +242,7 @@ public class UserService {
             var user = repository.findById(id);
             var news = newsRepository.findByAuthorId(id);
             var webinar = webinarRepository.findByAuthorId(id);
-            var webinar_subscribers = webinarRepository.findBySubscribers(user.get());
+            var webinar_subscribers = webinarSubscribeRepository.findByPkSubscribe_UserId(id);
             if (!news.isEmpty()) {
                 for (var item : news) {
                     newsRepository.delete(item);
@@ -260,36 +262,11 @@ public class UserService {
             }
             if(!webinar_subscribers.isEmpty()) {
                 for (var item : webinar_subscribers) {
-                    List<User> list = new ArrayList<>(item.getSubscribers());
-//                    List<User> aaa = new ArrayList<>(item.getSubscribers());
-                    List<User> new_list = new ArrayList<>(item.getSubscribers());
-//                    while (item.getSubscribers().listIterator().hasNext()) {
-//
-//                        System.out.println(item.getSubscribers().listIterator().next().getName());
-//                        item.getSubscribers().listIterator().next();
-//                    }
-//                    for (var sub : list) {
-//                        System.out.println(sub.getName());
-//                        System.out.println( sub.getSurname());
-//                        System.out.println( Objects.equals(sub.getId(), id));
-//                        System.out.printf(String.valueOf(sub.getId()), id);
-//                        if(Objects.equals(sub.getId(), id)) {
-////                            new_list.add(sub);
-////                            System.out.println(list.size());
-//                            item.getSubscribers().
-//
-//
-//                        }
-//                    }
-                    System.out.println(33333333);
-//                    System.out.println(list.size());
-//                    item.setSubscribers(null);
-//                    webinarRepository.save(item);
-//                    item.setSubscribers(new_list);
-                    webinarRepository.save(item);
-
+                    System.out.println(item.getPkSubscribe());
+                    webinarSubscribeRepository.delete(item);
                 }
             }
+
             user.ifPresent(repository::delete);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {

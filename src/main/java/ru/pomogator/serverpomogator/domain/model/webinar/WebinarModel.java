@@ -60,9 +60,6 @@ public class WebinarModel extends BaseEntity {
     @OneToMany(mappedBy = "webinar", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     List<FavoriteWebinarModel> favorite;
 
-    @OneToMany( fetch = FetchType.EAGER)
-    private List<User> subscribers;
-
     @PrePersist
     public void prePersist() {
         if (status == null) {

@@ -7,9 +7,6 @@ import ru.pomogator.serverpomogator.domain.model.reviews.ReviewsModel;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface ReviewsMapper {
-    @Mapping(source = "filePath", target = "file.path")
-    ReviewsModel toReviewsModel(ReviewsModelDto reviewsModelDto);
-
     @Mapping(source = "file.path", target = "filePath")
     ReviewsModelDto toDto(ReviewsModel reviewsModel);
 

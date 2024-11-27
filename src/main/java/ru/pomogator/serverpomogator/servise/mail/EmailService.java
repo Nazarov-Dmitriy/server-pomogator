@@ -18,6 +18,7 @@ import ru.pomogator.serverpomogator.domain.dto.email.FormRequest;
 import ru.pomogator.serverpomogator.domain.model.news.NewsModel;
 import ru.pomogator.serverpomogator.domain.model.subscribe.Subcribe;
 import ru.pomogator.serverpomogator.domain.model.user.User;
+import ru.pomogator.serverpomogator.domain.model.webinar.SubscribeWebinarModel;
 import ru.pomogator.serverpomogator.domain.model.webinar.WebinarModel;
 import ru.pomogator.serverpomogator.exception.BadRequest;
 import ru.pomogator.serverpomogator.exception.InternalServerError;
@@ -133,12 +134,12 @@ public class EmailService {
     }
 
     @Async
-    public void sendRemindersWebinar(List<User> subscriberUsers, String pathMaterial, WebinarModel webinar, String date_translation) {
+    public void sendRemindersWebinar(List<SubscribeWebinarModel> subscriberUsers, String pathMaterial, WebinarModel webinar, String date_translation) {
         for (var item : subscriberUsers) {
             try {
                 var url = urlFrontend.split(",")[0] + pathMaterial;
                 Map<String, String> params = new HashMap<>();
-                params.put("email", item.getEmail());
+                params.put("email", item.getUser().getEmail());
                 params.put("subject", "Напоминание сегодня проходит вебинар");
                 params.put("theme", webinar.getTitle());
                 params.put("template", "reminder-webinar.ftlh");
@@ -194,7 +195,7 @@ public class EmailService {
             Map<String, String> params = new HashMap<>();
             params.put("email", email);
             params.put("subject", "Восстановление пароля");
-            params.put("password",password);
+            params.put("password", password);
             params.put("template", "for-got-password.ftlh");
             sendSimpleEmail(params, null);
             ResponseEntity.ok().build();

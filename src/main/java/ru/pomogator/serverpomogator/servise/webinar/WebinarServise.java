@@ -15,20 +15,14 @@ import ru.pomogator.serverpomogator.domain.mapper.WebinarMapper;
 import ru.pomogator.serverpomogator.domain.model.news.TagsModel;
 import ru.pomogator.serverpomogator.domain.model.sertificat.CertificateModel;
 import ru.pomogator.serverpomogator.domain.model.user.User;
-import ru.pomogator.serverpomogator.domain.model.webinar.FavoriteWebinarKey;
-import ru.pomogator.serverpomogator.domain.model.webinar.FavoriteWebinarModel;
-import ru.pomogator.serverpomogator.domain.model.webinar.Status;
-import ru.pomogator.serverpomogator.domain.model.webinar.WebinarModel;
+import ru.pomogator.serverpomogator.domain.model.webinar.*;
 import ru.pomogator.serverpomogator.exception.BadRequest;
 import ru.pomogator.serverpomogator.exception.InternalServerError;
 import ru.pomogator.serverpomogator.repository.certificate.CertificateRepository;
 import ru.pomogator.serverpomogator.repository.favorite.FavoriteWebinarRepository;
-import ru.pomogator.serverpomogator.repository.news.CategoryRepository;
-import ru.pomogator.serverpomogator.repository.news.NewsRepository;
 import ru.pomogator.serverpomogator.repository.subscribe.SubcribeRepository;
-import ru.pomogator.serverpomogator.repository.tags.TagsRepository;
-import ru.pomogator.serverpomogator.repository.user.UserRepository;
 import ru.pomogator.serverpomogator.repository.webinar.WebinarRepository;
+import ru.pomogator.serverpomogator.repository.webinar.WebinarSubscribeRepository;
 import ru.pomogator.serverpomogator.servise.mail.EmailService;
 import ru.pomogator.serverpomogator.utils.FileCreate;
 import ru.pomogator.serverpomogator.utils.FileDelete;
@@ -47,14 +41,11 @@ import java.util.List;
 @Service
 public class WebinarServise {
     private final WebinarRepository webinarRepository;
-    private final UserRepository userRepository;
-    private final NewsRepository newsRepository;
-    private final TagsRepository tagsRepository;
-    private final CategoryRepository categoryRepository;
     private final WebinarMapper webinarMapper;
     private final SubcribeRepository subcribeRepository;
     private final FavoriteWebinarRepository favoriteWebinarRepository;
     private final CertificateRepository certificateRepository;
+    private final WebinarSubscribeRepository webinarSubscribeRepository;
 
     @Autowired
     EmailService emailService;
@@ -251,6 +242,11 @@ public class WebinarServise {
     public ResponseEntity<?> remove(Long id) {
         try {
             var webinar = webinarRepository.findById(id);
+            var webinar_subscribers = webinarSubscribeRepository.findByPkSubscribe_WebinarId(id);
+
+            if(webinar_subscribers != null) {
+                webinarSubscribeRepository.deleteAll(webinar_subscribers);
+            }
             webinarRepository.deleteById(id);
 
             if (webinar.isPresent()) {
@@ -269,10 +265,9 @@ public class WebinarServise {
         try {
             var webinar = webinarRepository.findById(webinarId);
             if (webinar.isPresent()) {
-                ArrayList<User> list = new ArrayList<>(webinar.get().getSubscribers());
-                list.add(user);
-                webinar.ifPresent(webinarModel -> webinarModel.setSubscribers(list));
-                webinar.ifPresent(webinarRepository::save);
+                var subscribeWebinarKey = new SubscribeWebinarKey(webinarId, user.getId());
+                var subscribe = new SubscribeWebinarModel(subscribeWebinarKey);
+                webinarSubscribeRepository.save(subscribe);
                 return new ResponseEntity<>(true, HttpStatus.OK);
 
             } else {
@@ -284,10 +279,12 @@ public class WebinarServise {
         }
     }
 
-    public ResponseEntity<?> getSubscribeUser(Long webinarId, List<User> user) {
+    public ResponseEntity<?> getSubscribeUser(Long webinarId, Long user) {
         try {
-            var webinar = webinarRepository.findByIdAndSubscribersIn(webinarId, user);
-            if (webinar.isPresent()) {
+            var pk = new SubscribeWebinarKey(webinarId, user);
+
+            var subscriber = webinarSubscribeRepository.findByPkSubscribe(pk);
+            if (subscriber != null) {
                 return new ResponseEntity<>(true, HttpStatus.OK);
             }
             return new ResponseEntity<>(false, HttpStatus.OK);
@@ -301,13 +298,15 @@ public class WebinarServise {
             var webinar = webinarRepository.findById(webinarId);
             webinar.ifPresent(webinarModel -> webinarModel.setStatus(Status.completed));
             DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
-
-            for (var subscribers : webinar.get().getSubscribers()) {
-                var certificate = new CertificateModel();
-                certificate.setTitle(webinar.get().getTitle());
-                certificate.setDate(df.format(new Date()));
-                certificate.setUser(subscribers);
-                certificateRepository.save(certificate);
+            var subscribers = webinarSubscribeRepository.findByPkSubscribe_WebinarId(webinarId);
+            if (subscribers != null && webinar.isPresent()) {
+                for (var subscriber : subscribers) {
+                    var certificate = new CertificateModel();
+                    certificate.setTitle(webinar.get().getTitle());
+                    certificate.setDate(df.format(new Date()));
+                    certificate.setUser(subscriber.getUser());
+                    certificateRepository.save(certificate);
+                }
             }
 
             return new ResponseEntity<>(HttpStatus.OK);
@@ -325,13 +324,14 @@ public class WebinarServise {
             for (var item : webinar) {
                 var differenceTime = item.getDate_translation().getTime() - currentDate.getTime();
                 if (differenceTime <= 7_200_200 && differenceTime >= 0) {
-                    var subscriberUsers = item.getSubscribers();
-                    if (!subscriberUsers.isEmpty()) {
+                    var subscribers = webinarSubscribeRepository.findByPkSubscribe_WebinarId(item.getId());
+
+                    if (subscribers != null) {
                         ZonedDateTime date = ZonedDateTime.ofInstant(item.getDate_translation().toInstant(),
                                 ZoneId.systemDefault());
                         var dateFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy в HH:mm (МСК)").format(date);
                         var pathMaterial = "/webinar/" + item.getId();
-                        emailService.sendRemindersWebinar(subscriberUsers, pathMaterial, item, dateFormat);
+                        emailService.sendRemindersWebinar(subscribers, pathMaterial, item, dateFormat);
                     }
                 }
             }

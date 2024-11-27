@@ -6,6 +6,7 @@ import ru.pomogator.serverpomogator.domain.model.file.FileModel;
 import ru.pomogator.serverpomogator.domain.model.news.FavoriteModel;
 import ru.pomogator.serverpomogator.domain.model.news.NewsModel;
 import ru.pomogator.serverpomogator.domain.model.webinar.FavoriteWebinarModel;
+import ru.pomogator.serverpomogator.domain.model.webinar.SubscribeWebinarModel;
 
 import java.util.Date;
 import java.util.Set;
@@ -70,9 +71,6 @@ public class User {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER,  orphanRemoval = true)
     Set<FavoriteModel> favorite;
-
-    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true)
-    Set<FavoriteWebinarModel> favorite_webinar;
 
     @PrePersist
     public void prePersist() {

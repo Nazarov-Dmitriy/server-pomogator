@@ -69,6 +69,7 @@ public class ReviewsServise {
                     path.append("files/reviews/").append(edit_reviews.getId()).append("/");
                     var new_file = FileCreate.addFile(file, path);
                     edit_reviews.setFile(new_file);
+                    reviewsRepository.save( edit_reviews);
                 }
             }
             return new ResponseEntity<>(HttpStatus.OK);
