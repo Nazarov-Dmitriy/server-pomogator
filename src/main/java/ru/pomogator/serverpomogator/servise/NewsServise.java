@@ -16,12 +16,12 @@ import ru.pomogator.serverpomogator.domain.model.news.FavoriteModel;
 import ru.pomogator.serverpomogator.domain.model.news.NewsModel;
 import ru.pomogator.serverpomogator.domain.model.news.TagsModel;
 import ru.pomogator.serverpomogator.exception.BadRequest;
+import ru.pomogator.serverpomogator.exception.InternalServerError;
 import ru.pomogator.serverpomogator.repository.favorite.FavoriteNewsRepository;
 import ru.pomogator.serverpomogator.repository.news.CategoryRepository;
 import ru.pomogator.serverpomogator.repository.news.NewsRepository;
 import ru.pomogator.serverpomogator.repository.subscribe.SubcribeRepository;
 import ru.pomogator.serverpomogator.repository.tags.TagsRepository;
-import ru.pomogator.serverpomogator.repository.user.UserRepository;
 import ru.pomogator.serverpomogator.servise.mail.EmailService;
 import ru.pomogator.serverpomogator.utils.FileCreate;
 import ru.pomogator.serverpomogator.utils.FileDelete;
@@ -33,7 +33,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class NewsServise {
-    private final UserRepository userRepository;
     private final NewsRepository newsRepository;
     private final TagsRepository tagsRepository;
     private final CategoryRepository categoryRepository;
@@ -132,18 +131,36 @@ public class NewsServise {
         }
     }
 
-    public ResponseEntity<?> list(Long category, List<String> tags) {
+    public ResponseEntity<?> list(Long category, List<String> tags, String typePublished) {
         try {
             List<NewsModel> news = null;
             var list = new ArrayList<NewsResponse>();
-            if (category != null) {
-                news = newsRepository.findByCategoryId(category);
-            } else if (tags != null) {
-                news = newsRepository.findByTagsIn(tags);
-
+            if (typePublished != null) {
+                if (typePublished.equals("all")) {
+                    if (tags != null) {
+                        news = newsRepository.findByTagsIn(tags);
+                    } else {
+                        news = newsRepository.findAll();
+                    }
+                } else {
+                    var published = typePublished.equals("true");
+                    if (tags != null) {
+                        news = newsRepository.findByTagsInAndPublished(tags, published);
+                    } else {
+                        news = newsRepository.findByPublished(published);
+                    }
+                }
             } else {
-                news = newsRepository.findAll();
+
+                if (category != null) {
+                    news = newsRepository.findByCategoryIdAndPublished(category, true);
+                } else if (tags != null) {
+                    news = newsRepository.findByTagsInAndPublished(tags, true);
+                } else {
+                    news = newsRepository.findByPublished(true);
+                }
             }
+
 
             if (!news.isEmpty()) {
                 for (var item : news) {
@@ -282,7 +299,7 @@ public class NewsServise {
     public ResponseEntity<?> listActual() {
         try {
             var list = new ArrayList<NewsResponse>();
-            var news = newsRepository.findTop3ByOrderByCreatedAtDesc();
+            var news = newsRepository.findTop3ByPublishedOrderByCreatedAtDesc(true);
 
             if (!news.isEmpty()) {
                 for (var item : news) {
@@ -292,6 +309,20 @@ public class NewsServise {
             return new ResponseEntity<>(list, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @Transactional
+    public ResponseEntity<?> setPublished(Long id) {
+        try {
+            var news = newsRepository.findById(id);
+            if (news.isPresent()) {
+                news.get().setPublished(!news.get().isPublished());
+                newsRepository.save(news.get());
+            }
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            throw new InternalServerError("Error");
         }
     }
 }

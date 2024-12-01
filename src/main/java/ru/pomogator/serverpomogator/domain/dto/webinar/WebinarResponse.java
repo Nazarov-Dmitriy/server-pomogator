@@ -33,6 +33,7 @@ public class WebinarResponse implements Serializable {
     private String preview_img;
     private NewsResponse.UserDto author;
     private Status status;
+    private Boolean published;
     @JsonFormat(pattern = "dd.MM.yyyy")
     private LocalDateTime createdAt;
     @JsonFormat(pattern = "dd.MM.yyyy")

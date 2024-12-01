@@ -3,6 +3,7 @@ package ru.pomogator.serverpomogator.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,13 +34,12 @@ public class NewsController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<?> list(@RequestParam(required = false) Long category, @RequestParam(required = false) List<String> tags) {
-        return newsServise.list(category, tags);
+    public ResponseEntity<?> list(@RequestParam(required = false) Long category, @RequestParam(required = false) List<String> tags, @RequestParam(required = false) String published) {
+        return newsServise.list(category, tags, published);
     }
 
     @GetMapping("/list-actial")
     public ResponseEntity<?> listActual() {
-        log.info("list-actial");
         return newsServise.listActual();
     }
 
@@ -91,5 +91,11 @@ public class NewsController {
     @GetMapping("/favorite/user/{id}")
     public ResponseEntity<?> getFavoriteNewsUser(@PathVariable Long id, @RequestParam(required = false) List<TagsModel> tags) {
         return newsServise.getFavoriteNewsUser(id, tags);
+    }
+
+    @Secured({"ADMIN", "MODERATOR"})
+    @PutMapping("/published/{id}")
+    public ResponseEntity<?> setPublished(@PathVariable Long id) {
+        return newsServise.setPublished(id);
     }
 }

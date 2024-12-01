@@ -23,7 +23,7 @@ public class AdminController {
 
     @PutMapping("/change-role")
     public ResponseEntity<?>  setUserRole(@RequestBody @Validated(UserRequest.ChangeRole.class) UserRequest body) {
-        System.out.println(body);
+
         return userService.setUserRole(body);
     }
 

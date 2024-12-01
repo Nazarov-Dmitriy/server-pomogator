@@ -37,6 +37,10 @@ public class NewsModel extends BaseEntity {
     @Column(name = "shows", nullable = false)
     private int shows;
 
+    @Column(name = "published", nullable = false)
+    @ColumnDefault("false")
+    private boolean published;
+
     @Column(name = "likes", nullable = false)
     private int likes;
 

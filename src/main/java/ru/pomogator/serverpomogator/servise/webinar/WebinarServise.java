@@ -84,15 +84,34 @@ public class WebinarServise {
         }
     }
 
-    public ResponseEntity<?> list(List<String> tags) {
+    public ResponseEntity<?> list(List<String> tags, String typePublished) {
         try {
             List<WebinarModel> webinar = null;
             var list = new ArrayList<WebinarResponse>();
-            if (tags != null) {
-                webinar = webinarRepository.findByTagsIn(tags);
+
+            if (typePublished != null) {
+                if (typePublished.equals("all")) {
+                    if (tags != null) {
+                        webinar = webinarRepository.findByTagsIn(tags);
+                    } else {
+                        webinar = webinarRepository.findAll();
+                    }
+                } else {
+                    var published = typePublished.equals("true");
+                    if (tags != null) {
+                        webinar = webinarRepository.findByTagsInAndPublished(tags, published);
+                    } else {
+                        webinar = webinarRepository.findByPublished(published);
+                    }
+                }
             } else {
-                webinar = webinarRepository.findAll();
+                if (tags != null) {
+                    webinar = webinarRepository.findByTagsInAndPublished(tags, true);
+                } else {
+                    webinar = webinarRepository.findByPublished(true);
+                }
             }
+
 
             if (!webinar.isEmpty()) {
                 for (var item : webinar) {
@@ -100,6 +119,7 @@ public class WebinarServise {
                 }
             }
             return new ResponseEntity<>(list, HttpStatus.OK);
+
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -244,7 +264,7 @@ public class WebinarServise {
             var webinar = webinarRepository.findById(id);
             var webinar_subscribers = webinarSubscribeRepository.findByPkSubscribe_WebinarId(id);
 
-            if(webinar_subscribers != null) {
+            if (webinar_subscribers != null) {
                 webinarSubscribeRepository.deleteAll(webinar_subscribers);
             }
             webinarRepository.deleteById(id);
@@ -274,7 +294,6 @@ public class WebinarServise {
                 return new ResponseEntity<>(false, HttpStatus.OK);
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -335,6 +354,20 @@ public class WebinarServise {
                     }
                 }
             }
+        }
+    }
+
+    @Transactional
+    public ResponseEntity<?> setPublished(Long id) {
+        try {
+            var webinar = webinarRepository.findById(id);
+            if (webinar.isPresent()) {
+                webinar.get().setPublished(!webinar.get().isPublished());
+                webinarRepository.save(webinar.get());
+            }
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            throw new InternalServerError("Error");
         }
     }
 }

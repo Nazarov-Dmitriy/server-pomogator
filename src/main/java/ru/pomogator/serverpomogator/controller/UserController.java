@@ -44,8 +44,8 @@ public class UserController {
     }
 
     @GetMapping("/material")
-    public ResponseEntity<?> userMaterial(Long id,  @RequestParam(required = false) List<String> tags) {
-        return userService.userMaterial(id, tags);
+    public ResponseEntity<?> userMaterial(Long id,  @RequestParam(required = false) List<String> tags,  @RequestParam(required = false) String published) {
+        return userService.userMaterial(id, tags, published);
     }
 }
 

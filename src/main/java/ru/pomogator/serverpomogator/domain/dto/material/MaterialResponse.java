@@ -32,4 +32,5 @@ public class MaterialResponse implements Serializable {
     private String file;
     private String type;
     private String preview_img;
+    private Boolean published;
 }

@@ -38,6 +38,7 @@ public class NewsResponse implements Serializable {
     private String file;
     private UserDto author;
     private String type="article";
+    private Boolean published;
 
 
     /**

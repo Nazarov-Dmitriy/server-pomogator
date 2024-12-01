@@ -3,6 +3,7 @@ package ru.pomogator.serverpomogator.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,8 +31,8 @@ public class WebinarController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<?> list(@RequestParam(required = false) List<String> tags) {
-        return webinarServise.list(tags);
+    public ResponseEntity<?> list(@RequestParam(required = false) List<String> tags, @RequestParam(required = false) String published) {
+        return webinarServise.list(tags, published);
     }
 
     @GetMapping("/{id}")
@@ -87,5 +88,11 @@ public class WebinarController {
     @GetMapping("/set-status")
     public ResponseEntity<?> setStatus(@RequestParam Long webinar_id) {
         return webinarServise.setStatus(webinar_id);
+    }
+
+    @Secured({"ADMIN", "MODERATOR"})
+    @PutMapping("/published/{id}")
+    public ResponseEntity<?> setPublished(@PathVariable Long id) {
+        return webinarServise.setPublished(id);
     }
 }

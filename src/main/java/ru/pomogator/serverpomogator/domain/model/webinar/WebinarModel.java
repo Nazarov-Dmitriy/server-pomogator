@@ -2,6 +2,7 @@ package ru.pomogator.serverpomogator.domain.model.webinar;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import ru.pomogator.serverpomogator.domain.model.base.BaseEntity;
 import ru.pomogator.serverpomogator.domain.model.file.FileModel;
 import ru.pomogator.serverpomogator.domain.model.news.TagsModel;
@@ -43,6 +44,10 @@ public class WebinarModel extends BaseEntity {
 
     @Column(name = "video")
     private String video;
+
+    @Column(name = "published", nullable = false)
+    @ColumnDefault("false")
+    private boolean published;
 
     @Column(name = "date_translation")
     private Date date_translation;

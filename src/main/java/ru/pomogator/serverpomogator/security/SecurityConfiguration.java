@@ -17,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
-import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -25,7 +24,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
-import static org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter.Directive.*;
 
 @Configuration
 @EnableWebSecurity
@@ -40,13 +38,14 @@ public class SecurityConfiguration {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(request ->
-                        request.requestMatchers("/auth/**", "/files/**", "/images/**", "/certificate/**","/subscribe/**", "/send-mail/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/news/**","/webinar/**", "/admin/reviews/list" )
+                        request.requestMatchers("/auth/**", "/files/**", "/images/**", "/certificate/**", "/subscribe/**", "/send-mail/**", "/reviews/list").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/news/**", "/webinar/**", "/admin/reviews/list")
                                 .permitAll()
-                                .requestMatchers(HttpMethod.POST,"/send-mail/**" ,"/auth/**", "/user/for-got-password")
+                                .requestMatchers(HttpMethod.POST, "/send-mail/**", "/auth/**", "/user/for-got-password")
                                 .permitAll()
-                                .requestMatchers(HttpMethod.POST, "/news/**","/webinar/**")
-                                .authenticated().requestMatchers(HttpMethod.PUT, "/news/**","/webinar/**").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/news/**", "/webinar/**")
+                                .authenticated()
+                                .requestMatchers(HttpMethod.PUT, "/news/**", "/webinar/**").authenticated()
                                 .requestMatchers("/reviews/**").hasAnyRole("ADMIN", "MODERATOR")
                                 .requestMatchers("/endpoint", "/admin/**").hasRole("ADMIN")
                                 .anyRequest().authenticated())

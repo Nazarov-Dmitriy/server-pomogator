@@ -13,9 +13,17 @@ public interface WebinarRepository extends JpaRepository<WebinarModel, Long> {
 
     List<WebinarModel> findByAuthorId(Long id);
 
+    List<WebinarModel> findByAuthorIdAndPublished(Long id, Boolean published);
+
     List<WebinarModel> findByAuthorIdAndTagsIn(Long id, List<String> tags);
 
+    List<WebinarModel> findByAuthorIdAndTagsInAndPublished(Long id, List<String> tags, Boolean published);
+
+    List<WebinarModel> findByPublished(boolean published);
+
     void deleteById(Long id);
+
+    List<WebinarModel> findByTagsInAndPublished(List<String> tags, boolean published);
 
     List<WebinarModel> findByTagsIn(List<String> tags);
 

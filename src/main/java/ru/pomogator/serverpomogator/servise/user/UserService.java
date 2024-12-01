@@ -151,16 +151,27 @@ public class UserService {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    public ResponseEntity<?> userMaterial(Long id, List<String> tags) {
+    public ResponseEntity<?> userMaterial(Long id, List<String> tags, String typePublished) {
         try {
             List<NewsModel> news;
             List<WebinarModel> webinar;
-            if (tags != null) {
-                news = newsRepository.findByAuthorIdAndTagsIn(id, tags);
-                webinar = webinarRepository.findByAuthorIdAndTagsIn(id, tags);
+            if (typePublished.equals("all")) {
+                if (tags != null) {
+                    news = newsRepository.findByAuthorIdAndTagsIn(id, tags);
+                    webinar = webinarRepository.findByAuthorIdAndTagsIn(id, tags);
+                } else {
+                    news = newsRepository.findByAuthorId(id);
+                    webinar = webinarRepository.findByAuthorId(id);
+                }
             } else {
-                news = newsRepository.findByAuthorId(id);
-                webinar = webinarRepository.findByAuthorId(id);
+                var published = typePublished.equals("true");
+                if (tags != null) {
+                    news = newsRepository.findByAuthorIdAndTagsInAndPublished(id, tags, published);
+                    webinar = webinarRepository.findByAuthorIdAndTagsInAndPublished(id, tags, published);
+                } else {
+                    news = newsRepository.findByAuthorIdAndPublished(id, published);
+                    webinar = webinarRepository.findByAuthorIdAndPublished(id, published);
+                }
             }
 
             var list = new ArrayList<MaterialResponse>();
@@ -260,9 +271,8 @@ public class UserService {
                     FileDelete.deleteFile(directoryPath, true);
                 }
             }
-            if(!webinar_subscribers.isEmpty()) {
+            if (!webinar_subscribers.isEmpty()) {
                 for (var item : webinar_subscribers) {
-                    System.out.println(item.getPkSubscribe());
                     webinarSubscribeRepository.delete(item);
                 }
             }
@@ -270,9 +280,6 @@ public class UserService {
             user.ifPresent(repository::delete);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println("e");
-            System.out.println(e);
-            System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
