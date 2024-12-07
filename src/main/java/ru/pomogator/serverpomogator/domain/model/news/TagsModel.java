@@ -3,8 +3,6 @@ package ru.pomogator.serverpomogator.domain.model.news;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-
 @Data
 @Getter
 @Setter

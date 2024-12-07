@@ -324,10 +324,11 @@ public class WebinarServise {
                     certificate.setTitle(webinar.get().getTitle());
                     certificate.setDate(df.format(new Date()));
                     certificate.setUser(subscriber.getUser());
+                    certificate.setWebinarId(webinarId);
                     certificateRepository.save(certificate);
                 }
             }
-
+            webinar.ifPresent(webinarRepository::save);
             return new ResponseEntity<>(HttpStatus.OK);
 
         } catch (Exception e) {

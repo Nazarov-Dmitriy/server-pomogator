@@ -24,22 +24,22 @@ public class FileModel {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false , columnDefinition="BLOB")
+    @Column(nullable = false, columnDefinition = "BLOB")
     private String path;
 
     @Column(nullable = false)
     private long size;
 
-    @OneToOne( mappedBy = "file" , fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToOne(mappedBy = "file", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private NewsModel news;
 
-    @OneToOne( mappedBy = "preview_img")
+    @OneToOne(mappedBy = "preview_img")
     private WebinarModel webinar;
 
-    @OneToOne( mappedBy = "file")
+    @OneToOne(mappedBy = "file")
     private ReviewsModel reviews;
 
-    @OneToOne( mappedBy = "avatar")
+    @OneToOne(mappedBy = "avatar")
     @JoinColumn(name = "avatar_id", referencedColumnName = "id")
     private User user;
 }

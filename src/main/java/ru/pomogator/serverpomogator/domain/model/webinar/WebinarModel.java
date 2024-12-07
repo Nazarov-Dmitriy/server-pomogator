@@ -30,7 +30,7 @@ public class WebinarModel extends BaseEntity {
     private String title;
 
     @Lob
-    @Column(name = "annotation", nullable = false)
+    @Column(name = "annotation", nullable = false, columnDefinition = "MEDIUMTEXT")
     private String annotation;
 
     @Column(name = "shows", nullable = false)

@@ -28,7 +28,7 @@ public class JwtService {
      * @param token токен
      * @return имя пользователя
      */
-    public String extractUserName(String token) {
+    public String extractUserName(String token) throws ExpiredJwtException {
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -67,7 +67,7 @@ public class JwtService {
      * @param <T>             тип данных
      * @return данные
      */
-    private <T> T extractClaim(String token, Function<Claims, T> claimsResolvers) throws ExpiredJwtException{
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolvers) throws ExpiredJwtException {
         final Claims claims = extractAllClaims(token);
         return claimsResolvers.apply(claims);
     }

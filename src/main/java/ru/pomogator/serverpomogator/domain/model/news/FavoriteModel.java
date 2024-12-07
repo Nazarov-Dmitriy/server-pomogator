@@ -18,7 +18,7 @@ public class FavoriteModel {
     @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("newsId")
     @JoinColumn(name = "news_id", referencedColumnName = "id")
-    NewsModel news ;
+    NewsModel news;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("userId")
@@ -27,7 +27,7 @@ public class FavoriteModel {
 
     Boolean favorite;
 
-    public FavoriteModel(FavoriteKey pk ) {
+    public FavoriteModel(FavoriteKey pk) {
         var newsPk = new NewsModel();
         newsPk.setId(pk.getNewsId());
         var userPk = new User();
@@ -35,7 +35,7 @@ public class FavoriteModel {
         this.pkFavorite = pk;
         this.news = newsPk;
         this.user = userPk;
-        favorite=true;
+        favorite = true;
     }
 }
 

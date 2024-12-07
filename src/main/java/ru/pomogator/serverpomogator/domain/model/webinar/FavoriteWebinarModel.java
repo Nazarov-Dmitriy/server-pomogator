@@ -29,7 +29,7 @@ public class FavoriteWebinarModel {
 
     Boolean favorite;
 
-    public FavoriteWebinarModel(FavoriteWebinarKey pk ) {
+    public FavoriteWebinarModel(FavoriteWebinarKey pk) {
         var newsPk = new WebinarModel();
         newsPk.setId(pk.getNewsId());
         var userPk = new User();
@@ -37,7 +37,7 @@ public class FavoriteWebinarModel {
         this.pkFavorite = pk;
         this.webinar = newsPk;
         this.user = userPk;
-        favorite=true;
+        favorite = true;
     }
 }
 

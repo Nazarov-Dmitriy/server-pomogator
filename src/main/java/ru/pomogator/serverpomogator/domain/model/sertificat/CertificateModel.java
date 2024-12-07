@@ -27,6 +27,11 @@ public class CertificateModel extends BaseEntity {
     @Column(name = "title", nullable = false)
     private String title;
 
+    @Column(nullable = false)
+    private Long webinarId;
+
     @ManyToOne(fetch = FetchType.EAGER)
     private User user;
+
+
 }

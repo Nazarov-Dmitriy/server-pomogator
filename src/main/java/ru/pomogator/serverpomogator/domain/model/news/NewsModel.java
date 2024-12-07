@@ -27,11 +27,11 @@ public class NewsModel extends BaseEntity {
     private String title;
 
     @Lob
-    @Column(name = "annotation", nullable = false)
+    @Column(name = "annotation", nullable = false, columnDefinition = "MEDIUMTEXT")
     private String annotation;
 
     @Lob
-    @Column(name = "article", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "article", nullable = false, columnDefinition = "LONGTEXT")
     private String article;
 
     @Column(name = "shows", nullable = false)
