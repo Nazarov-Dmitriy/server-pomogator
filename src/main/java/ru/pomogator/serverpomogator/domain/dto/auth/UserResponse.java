@@ -26,7 +26,7 @@ public class UserResponse {
     private Date date_birth;
     private String position;
     private String place_work;
-    private String rank;
+    private String rank_user;
     private String phone;
     private Boolean completed_profile;
     private String avatar;

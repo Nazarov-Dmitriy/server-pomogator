@@ -12,8 +12,13 @@ import java.util.TimeZone;
 @EnableScheduling
 public class ServerPomogatorApplication {
     public static void main(String[] args) {
-        SpringApplication.run(ServerPomogatorApplication.class, args);
+        SpringApplication application = new SpringApplication(ServerPomogatorApplication.class);
+        application.setAdditionalProfiles("ssl");
+        application.run(args);
         FolderCreate.intialFolder();
+
+//        SpringApplication.run(ServerPomogatorApplication.class, args);
+//        FolderCreate.intialFolder();
     }
 
     @PostConstruct

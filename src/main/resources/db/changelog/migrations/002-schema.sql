@@ -34,6 +34,12 @@ values ('Химия'),
        ('Статья'),
        ('Вeбинар');
 
+--changeset dmitriy:5
+CREATE TABLE users
+(
+    id bigint AUTO_INCREMENT primary key
+);
+
 
 
 

@@ -54,8 +54,8 @@ public class User {
     @Column(name = "place_work")
     private String place_work;
 
-    @Column(name = "rank")
-    private String rank;
+    @Column(name = "rank_user")
+    private String rank_user;
 
     @Column(name = "phone")
     private String phone;

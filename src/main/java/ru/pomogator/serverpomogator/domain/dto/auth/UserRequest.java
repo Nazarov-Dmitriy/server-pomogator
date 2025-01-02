@@ -47,7 +47,7 @@ public class UserRequest {
     @NotEmpty(message = "Поле не должно быть пустым", groups = {UserInfo.class})
     private String place_work;
 
-    private String rank;
+    private String rank_user;
 
     private String phone;
 
