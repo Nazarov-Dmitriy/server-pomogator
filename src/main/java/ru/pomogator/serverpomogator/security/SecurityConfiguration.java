@@ -75,7 +75,7 @@ public class SecurityConfiguration {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(List.of("http://localhost:5172", "http://pomogator.i99620sd.beget.tech/", "https://it-pomogator.rf", "https://ит-помогатор.рф", "https://xn----8sbisvlbcdqnh.xn--p1ai"));
+        corsConfiguration.setAllowedOrigins(List.of("http://localhost:5172",  "https://it-pomogator.rf", "https://ит-помогатор.рф", "https://xn----8sbisvlbcdqnh.xn--p1ai"));
         corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         corsConfiguration.setAllowCredentials(true);
         corsConfiguration.setAllowedHeaders(List.of("*"));

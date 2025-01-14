@@ -27,6 +27,7 @@ import ru.pomogator.serverpomogator.servise.mail.EmailService;
 import ru.pomogator.serverpomogator.utils.FileCreate;
 import ru.pomogator.serverpomogator.utils.FileDelete;
 
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
@@ -342,7 +343,11 @@ public class WebinarServise {
         if (!webinar.isEmpty()) {
             var currentDate = new Date();
             for (var item : webinar) {
-                var differenceTime = item.getDate_translation().getTime() - currentDate.getTime();
+                ZonedDateTime timeZone = ZonedDateTime.ofInstant(item.getDate_translation().toInstant(),
+                        ZoneId.systemDefault());
+                Timestamp timestampZone = Timestamp.from(timeZone.toInstant());
+
+                var differenceTime = timestampZone.getTime() - currentDate.getTime();
                 if (differenceTime <= 7_200_200 && differenceTime >= 0) {
                     var subscribers = webinarSubscribeRepository.findByPkSubscribe_WebinarId(item.getId());
 
