@@ -1,12 +1,10 @@
 package ru.pomogator.serverpomogator;
 
-import jakarta.annotation.PostConstruct;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import ru.pomogator.serverpomogator.utils.FolderCreate;
 
-import java.util.Date;
 import java.util.TimeZone;
 
 @SpringBootApplication
