@@ -11,7 +11,6 @@ public class FileDelete {
     static public void deleteFile(String folderPath, Boolean directoryDelete) {
         File directory = new File(folderPath);
         delete(directory, directoryDelete);
-
     }
 
     private static void delete(File directory, Boolean directoryDelete) {

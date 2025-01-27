@@ -534,7 +534,7 @@
                                                                             style="font-size: 20px; font-family: Arial, sans-serif;"><strong>Восстановление пароля</strong></span>
                                                                 </p>
                                                                 <p style="text-align: left; color: #222222; font-family: Helvetica, Arial, sans-serif; font-weight: normal; font-size: 14px; line-height: 1.3; margin: 0 0 10px; padding: 0;"
-                                                                   align="left"><span style="font-size: 18px;">Вы успешно востановли пароль.</span>
+                                                                   align="left"><span style="font-size: 18px;">Вы успешно востановили пароль.</span>
                                                                 </p>
                                                                 <p style="text-align: left; color: #222222; font-family: Helvetica, Arial, sans-serif; font-weight: normal; font-size: 14px; line-height: 1.3; margin: 0 0 10px; padding: 0;"
                                                                    align="left"><span style="font-size: 18px;">Новый пароль: ${password}</span><br>&nbsp;<br>&nbsp;
