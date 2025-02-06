@@ -5,8 +5,6 @@ import lombok.*;
 import ru.pomogator.serverpomogator.domain.model.file.FileModel;
 import ru.pomogator.serverpomogator.domain.model.news.FavoriteModel;
 import ru.pomogator.serverpomogator.domain.model.news.NewsModel;
-import ru.pomogator.serverpomogator.domain.model.webinar.FavoriteWebinarModel;
-import ru.pomogator.serverpomogator.domain.model.webinar.SubscribeWebinarModel;
 
 import java.util.Date;
 import java.util.Set;
@@ -66,10 +64,10 @@ public class User {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private FileModel avatar;
 
-    @OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private NewsModel news;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER,  orphanRemoval = true)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, orphanRemoval = true)
     Set<FavoriteModel> favorite;
 
     @PrePersist
